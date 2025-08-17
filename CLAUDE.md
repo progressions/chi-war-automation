@@ -195,3 +195,25 @@ Templates in `plop-templates/` define component structure.
 4. **Serializer selection**: Different serializers for index vs show actions
 5. **WebSocket broadcasts**: Trigger after state changes for real-time updates
 - run "nr fl" to lint and format
+
+## Issue Tracking
+
+When the user says **"create an issue"**, this means:
+
+1. **Create a new markdown file** in the `issues/` directory
+2. **File naming**: Use format `YYYY-MM-DD-short-description.md` (today's date + brief description)
+3. **Use the template** from `issues/TEMPLATE.md` as the starting structure
+4. **Fill in all sections**:
+   - Date: Today's date
+   - Priority: Low/Medium/High/Critical (based on severity)
+   - Category: UI/UX, Backend, Frontend, Authentication, Performance, Testing, etc.
+   - Description: Detailed explanation of the issue
+   - Steps to Reproduce: Clear reproduction steps
+   - Expected vs Actual Behavior
+   - Related Files: Files that may need changes (with paths)
+   - Screenshots: Reference any relevant images from test-results/
+   - Investigation Notes: Any debugging context or findings
+5. **Commit to git** with descriptive message
+6. **Push to GitHub** to maintain issue tracking history
+
+This creates a systematic approach to documenting bugs, improvements, and technical debt discovered during development and testing.
