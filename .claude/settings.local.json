@@ -28,7 +28,8 @@
       "Bash(RAILS_ENV=test rails console --brief)",
       "Bash(RAILS_ENV=test rails console)",
       "Bash(RAILS_ENV=test rails credentials:show)",
-      "mcp__playwright__browser_navigate"
+      "mcp__playwright__browser_navigate",
+      "Bash(git diff:*)"
     ],
     "deny": [],
     "ask": []
