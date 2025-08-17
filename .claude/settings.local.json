@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed:*)",
+      "Bash(export:*)",
+      "Bash(bundle exec rspec:*)",
+      "Bash(bin/rspec spec/requests/api/v2/vehicles/)",
+      "Bash(rspec:*)",
+      "Bash(rails test:units:*)",
+      "Bash(source:*)",
+      "Bash(rvm use:*)",
+      "Bash(git add:*)",
+      "Bash(bundle exec rails:*)",
+      "Bash(ruby --version)",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_tab_select",
+      "Bash(RAILS_ENV=test rails db:create)",
+      "Bash(RAILS_ENV=test rails db:migrate)",
+      "Bash(RAILS_ENV=test rails db:seed)",
+      "Bash(RAILS_ENV=test rails server -p 3000)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install:*)",
+      "Bash(npx playwright install:*)",
+      "Bash(mkdir:*)",
+      "Bash(node:*)",
+      "Bash(RAILS_ENV=test rails console --brief)",
+      "Bash(RAILS_ENV=test rails console)",
+      "Bash(RAILS_ENV=test rails credentials:show)",
+      "mcp__playwright__browser_navigate"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

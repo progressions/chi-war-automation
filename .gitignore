@@ -1,0 +1,25 @@
+# Ignore the subdirectory git repositories
+shot-server/
+shot-client-next/
+
+# Node modules (from Playwright installation)
+node_modules/
+
+# Test results and screenshots (these change frequently)
+test-results/
+
+# OS files
+.DS_Store
+*.log
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment files (if any)
+.env
+.env.local
+.env.*.local

@@ -1,0 +1,20 @@
+{
+  "name": "chi-war-tests",
+  "version": "1.0.0",
+  "description": "Automated tests for Chi War application",
+  "main": "test-fight-creation.js",
+  "scripts": {
+    "test": "node test-fight-creation.js",
+    "test:headless": "HEADLESS=true node test-fight-creation.js"
+  },
+  "dependencies": {
+    "playwright": "^1.54.2"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "automation"
+  ],
+  "author": "",
+  "license": "ISC"
+}
