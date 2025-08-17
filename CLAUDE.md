@@ -8,6 +8,49 @@ This is a monorepo containing two applications for managing Feng Shui 2 RPG camp
 - **shot-server**: Ruby on Rails 8.0 API backend (port 3000)
 - **shot-client-next**: Next.js 15.4 frontend (port 3001)
 
+### Directory Structure
+
+```
+chi-war/                          # Root monorepo directory
+├── shot-server/                  # Rails API backend
+│   ├── app/                      # Rails application code
+│   │   ├── controllers/          # API controllers (v1, v2)
+│   │   ├── models/               # Active Record models
+│   │   ├── serializers/          # JSON response formatting
+│   │   ├── services/             # Business logic services
+│   │   ├── jobs/                 # Background job processing
+│   │   └── channels/             # WebSocket channels
+│   ├── config/                   # Rails configuration
+│   ├── db/                       # Database migrations and seeds
+│   ├── spec/                     # RSpec test suite
+│   └── CLAUDE.md                 # Rails-specific documentation
+├── shot-client-next/             # Next.js frontend
+│   ├── src/                      # Source code
+│   │   ├── app/                  # Next.js App Router pages
+│   │   ├── components/           # React components by feature
+│   │   ├── contexts/             # React context providers
+│   │   ├── lib/                  # API clients and utilities
+│   │   ├── hooks/                # Custom React hooks
+│   │   ├── services/             # Domain logic services
+│   │   └── types/                # TypeScript type definitions
+│   ├── plop-templates/           # Code generation templates
+│   └── CLAUDE.md                 # Frontend-specific documentation
+├── issues/                       # Issue tracking (markdown files)
+│   ├── TEMPLATE.md               # Issue template
+│   └── *.md                      # Individual issue files
+├── test-scripts/                 # Playwright automation scripts
+│   ├── test-fight-creation.js    # E2E fight creation test
+│   ├── test-login-redirect.js    # Login redirect test
+│   └── test-results/             # Test screenshots and artifacts
+└── CLAUDE.md                     # This file - overall documentation
+```
+
+**Key Points:**
+- Each sub-application has its own git repository and CLAUDE.md
+- Root directory coordinates both applications and contains shared testing infrastructure
+- Issues directory provides systematic tracking of bugs and improvements
+- Test scripts validate critical user flows across both applications
+
 ## Common Development Commands
 
 ### Backend (shot-server)
