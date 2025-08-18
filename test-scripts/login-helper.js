@@ -48,7 +48,7 @@ async function loginToChiWar(page, email, password, options = {}) {
     const currentUrl = page.url();
     if (currentUrl.includes('/login')) {
       console.log('Still on login page, waiting for redirect...');
-      await page.waitForURL(url => !url.includes('/login'), { timeout: 10000 });
+      await page.waitForURL(url => !url.toString().includes('/login'), { timeout: 10000 });
     }
     
     if (takeScreenshot) {
