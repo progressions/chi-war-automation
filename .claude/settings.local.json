@@ -31,7 +31,10 @@
       "mcp__playwright__browser_navigate",
       "Bash(git diff:*)",
       "Bash(rails console:*)",
-      "Bash(rails:*)"
+      "Bash(rails:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(open http://localhost:3001)"
     ],
     "deny": [],
     "ask": []
