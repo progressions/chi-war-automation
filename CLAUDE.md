@@ -262,3 +262,4 @@ When the user says **"create an issue"**, this means:
 This creates a systematic approach to documenting bugs, improvements, and technical debt discovered during development and testing.
 - use full paths to navigate to the root, server, and client directories
 - when i say make a new branch, make a new branch in root, server, and client directories
+- when writing tests, use the login-helper.js
