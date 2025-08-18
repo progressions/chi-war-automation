@@ -55,12 +55,39 @@ There's a mismatch between how JWT tokens are stored during login and how the fr
 
 ## Acceptance Criteria
 
-- [ ] JWT token properly set in Authorization header on login response
-- [ ] Frontend successfully stores JWT token in cookies as `jwtToken`
-- [ ] AppContext reads JWT token from cookies correctly
-- [ ] All API requests include valid JWT token
-- [ ] Playwright tests pass authentication flows
-- [ ] No-campaign flow tests pass completely
+- [x] JWT token properly set in Authorization header on login response
+- [x] Frontend successfully stores JWT token in cookies as `jwtToken`
+- [x] AppContext reads JWT token from cookies correctly
+- [x] All API requests include valid JWT token
+- [x] Playwright tests pass authentication flows
+- [x] No-campaign flow tests pass completely
+
+## Resolution
+
+**Status**: ✅ RESOLVED  
+**Date**: 2025-08-18  
+**Branches**: `fix-jwt-auth` (root, server, client)
+
+### Changes Made
+
+**Backend (`shot-server`):**
+- Modified `Users::SessionsController` to manually set Authorization header with JWT token
+- Updated both `create` and `respond_with` methods for consistency
+- Fixes issue where Devise JWT automatic header setting was bypassed
+
+**Frontend (`shot-client-next`):**
+- Added error handling for missing JWT tokens in login response
+- Fixed cookie security settings for development (secure: false for localhost)
+- Ensures JWT tokens are properly stored in cookies during development
+
+**Testing:**
+- Created comprehensive JWT authentication validation test
+- Verified JWT token generation, header setting, cookie storage, and login flow
+- All authentication flows now working correctly
+
+### Technical Details
+
+The root cause was that the custom sessions controller was overriding Devise JWT's automatic header setting, and the frontend cookie security settings prevented storage on localhost. The fix ensures proper JWT token flow from backend generation to frontend storage and usage.
 
 ## Debugging Steps
 
