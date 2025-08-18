@@ -52,7 +52,8 @@
       "Bash(timeout:*)",
       "Bash(rvm list:*)",
       "Bash(ruby:*)",
-      "Bash(pg_ctl:*)"
+      "Bash(pg_ctl:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
