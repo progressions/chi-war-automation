@@ -163,6 +163,53 @@ rails db:test:prepare
 ### Frontend Testing
 Currently no test framework configured. Consider adding Jest/React Testing Library.
 
+### Reliable Server Startup for Testing
+
+**Starting Rails Server in TEST Environment:**
+```bash
+# From shot-server directory:
+# 1. Kill any existing processes
+pkill -f "rails server" ; pkill -f "puma" ; sleep 2
+
+# 2. Start Rails test server
+source ~/.rvm/scripts/rvm && rvm use 3.2.2 && RAILS_ENV=test rails db:prepare && RAILS_ENV=test rails server -p 3000
+```
+
+**Starting Next.js Development Server:**
+```bash
+# From shot-client-next directory:
+# 1. Kill any existing processes
+pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 2
+
+# 2. Start Next.js server
+npm run dev
+```
+
+**Complete Test Environment Setup:**
+```bash
+# Kill all existing servers
+pkill -f "rails server" ; pkill -f "puma" ; pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 3
+
+# Start Rails test server in background
+bash -c 'source ~/.rvm/scripts/rvm && rvm use 3.2.2 && RAILS_ENV=test rails server -p 3000' &
+
+# Start Next.js server in background
+cd /path/to/shot-client-next && npm run dev &
+
+# Wait for servers to start
+sleep 10
+
+# Verify servers are running
+curl -s http://localhost:3000/api/v2/users/current | head -1  # Should return auth error
+curl -s http://localhost:3001 | head -1                      # Should return redirect
+```
+
+**Notes:**
+- Rails test server takes ~8-10 seconds to fully start
+- Next.js server is usually ready in ~5-8 seconds
+- Both servers will show proper error responses when running correctly
+- Rails test environment uses separate database from development
+
 ## Database Management
 
 PostgreSQL with UUID primary keys:
@@ -263,3 +310,4 @@ This creates a systematic approach to documenting bugs, improvements, and techni
 - use full paths to navigate to the root, server, and client directories
 - when i say make a new branch, make a new branch in root, server, and client directories
 - when writing tests, use the login-helper.js
+- always use @agent-test-environment-manager to run tests

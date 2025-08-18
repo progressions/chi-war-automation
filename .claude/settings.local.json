@@ -37,7 +37,22 @@
       "Bash(open http://localhost:3001)",
       "Bash(gh pr merge:*)",
       "Bash(git stash:*)",
-      "Bash(gh pr list:*)"
+      "Bash(gh pr list:*)",
+      "Bash(pkill:*)",
+      "Bash(RAILS_ENV=test rails db:prepare)",
+      "Bash(curl:*)",
+      "Bash(bash:*)",
+      "Bash(lsof:*)",
+      "Bash(brew services:*)",
+      "Bash(RAILS_ENV=test rails db:create db:migrate)",
+      "Bash(bundle:*)",
+      "Bash(rvm current:*)",
+      "Bash(RAILS_ENV=test rails server)",
+      "Bash(RAILS_ENV=test rails console -e \"user = User.find_by(email: ''progressions@gmail.com''); puts ''User exists: '' + user.present?.to_s; puts ''Gamemaster: '' + user&.gamemaster?.to_s; puts ''Current campaign: '' + user&.current_campaign_id.to_s\")",
+      "Bash(timeout:*)",
+      "Bash(rvm list:*)",
+      "Bash(ruby:*)",
+      "Bash(pg_ctl:*)"
     ],
     "deny": [],
     "ask": []
