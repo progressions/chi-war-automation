@@ -3,7 +3,7 @@
 **Date**: 2025-08-17  
 **Priority**: Medium  
 **Category**: UI/UX  
-**Status**: Open
+**Status**: ✅ RESOLVED
 
 ## Description
 Users should have the ability to start or end campaign sessions and switch between different campaigns they have access to. This would provide better campaign management functionality, allowing users to actively manage which campaign is currently running and switch context between multiple campaigns.
@@ -71,7 +71,62 @@ This is particularly valuable for gamemasters who might run multiple campaigns o
    - Session timer/duration tracking
    - Quick campaign switching interface
 
+## Resolution
+
+**Status**: ✅ RESOLVED  
+**Date**: 2025-08-18  
+**Branches**: `add-campaign-deactivate` (root, server, client)
+
+### Changes Made
+
+**Campaign Selection & Switching:**
+- Implemented campaign activation/deactivation functionality in `src/components/campaigns/Table.tsx`
+- Added "Activate" buttons for inactive campaigns and "Deactivate" button for the current campaign
+- Users can now easily switch between campaigns they have access to
+- Real-time table updates when campaign status changes
+
+**Backend Campaign Management:**
+- Added `/api/v2/campaigns/current` endpoint to get current campaign state
+- Enhanced `/api/v2/campaigns/set` endpoint to handle campaign activation and deactivation (null for deactivation)
+- Proper handling of campaign context switching without affecting database `active` field
+
+**User Experience Improvements:**
+- Clear visual indicators showing which campaign is currently active
+- Confirmation dialogs for campaign deactivation to prevent accidental changes
+- Restricted menu access when no campaign is active (shows only "Campaigns" option)
+- Toast notifications providing feedback for campaign state changes
+
+**Session State Management:**
+- Campaign activation sets the campaign as user's current context
+- Campaign deactivation clears current campaign without affecting campaign's active status
+- Proper redirect handling for users without current campaigns
+- Maintained authentication while managing campaign context
+
+### Technical Implementation
+
+The campaign session management was implemented through:
+1. **Frontend UI**: Campaign table with activate/deactivate controls
+2. **Backend API**: RESTful endpoints for campaign state management  
+3. **Context Management**: Proper handling of campaign switching in AppContext
+4. **User Flow**: Seamless switching between multiple campaigns
+
+**Key Features Delivered:**
+- ✅ Start/activate campaigns (set as current campaign)
+- ✅ End/deactivate campaigns (unset current campaign) 
+- ✅ Select which campaign to run (campaign switching)
+- ✅ Visual campaign status indicators
+- ✅ Session state management
+- ✅ Multi-campaign user support
+
+### Testing Validation
+
+- ✅ Users can activate any campaign they have access to
+- ✅ Campaign deactivation properly clears current campaign context
+- ✅ Menu restrictions work correctly when no campaign is active
+- ✅ Campaign switching maintains proper authentication
+- ✅ Real-time UI updates reflect campaign state changes
+
 ## Related Issues
 - Related to campaign management improvements
 - Connected to user onboarding for multi-campaign users
-- May relate to Discord bot integration for session management
+- Integrated with campaign deactivate feature development
