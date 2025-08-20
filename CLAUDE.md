@@ -4,15 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a monorepo containing two applications for managing Feng Shui 2 RPG campaigns:
-- **shot-server**: Ruby on Rails 8.0 API backend (port 3000)
-- **shot-client-next**: Next.js 15.4 frontend (port 3001)
+This is a coordination repository for managing Feng Shui 2 RPG campaigns with two separate applications:
+- **shot-server**: Ruby on Rails 8.0 API backend (port 3000) - separate git repository
+- **shot-client-next**: Next.js 15.4 frontend (port 3001) - separate git repository
 
 ### Directory Structure
 
 ```
-chi-war/                          # Root monorepo directory
-├── shot-server/                  # Rails API backend
+chi-war/                          # Root coordination repository
+├── shot-server/                  # Rails API backend (separate git repo, gitignored)
 │   ├── app/                      # Rails application code
 │   │   ├── controllers/          # API controllers (v1, v2)
 │   │   ├── models/               # Active Record models
@@ -24,7 +24,7 @@ chi-war/                          # Root monorepo directory
 │   ├── db/                       # Database migrations and seeds
 │   ├── spec/                     # RSpec test suite
 │   └── CLAUDE.md                 # Rails-specific documentation
-├── shot-client-next/             # Next.js frontend
+├── shot-client-next/             # Next.js frontend (separate git repo, gitignored)
 │   ├── src/                      # Source code
 │   │   ├── app/                  # Next.js App Router pages
 │   │   ├── components/           # React components by feature
@@ -38,16 +38,21 @@ chi-war/                          # Root monorepo directory
 ├── issues/                       # Issue tracking (markdown files)
 │   ├── TEMPLATE.md               # Issue template
 │   └── *.md                      # Individual issue files
+├── specs/                        # Development specifications
+│   └── *.md                      # Feature specifications and plans
 ├── test-scripts/                 # Playwright automation scripts
-│   ├── test-fight-creation.js    # E2E fight creation test
-│   ├── test-login-redirect.js    # Login redirect test
+│   ├── test-*.js                 # E2E test scripts
+│   ├── login-helper.js           # Test authentication helper
 │   └── test-results/             # Test screenshots and artifacts
+├── .gitignore                    # Ignores shot-server/ and shot-client-next/ 
 └── CLAUDE.md                     # This file - overall documentation
 ```
 
 **Key Points:**
-- Each sub-application has its own git repository and CLAUDE.md
-- Root directory coordinates both applications and contains shared testing infrastructure
+- **shot-server/** and **shot-client-next/** are separate git repositories, ignored by the root .gitignore
+- Root chi-war repository tracks shared coordination files: issues, specs, test scripts, and documentation
+- Each sub-application maintains its own git history and CLAUDE.md documentation
+- Development workflow involves working in individual repositories while coordinating through shared test infrastructure
 - Issues directory provides systematic tracking of bugs and improvements
 - Test scripts validate critical user flows across both applications
 
@@ -311,3 +316,4 @@ This creates a systematic approach to documenting bugs, improvements, and techni
 - when i say make a new branch, make a new branch in root, server, and client directories
 - when writing tests, use the login-helper.js
 - always use @agent-test-environment-manager to run tests
+- in chi-war/CLAUDE.md describe the directory structure, where shot-server and shot-client-next are gitignored, each their own repo
