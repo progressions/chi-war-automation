@@ -3,7 +3,29 @@
 **Date**: 2025-08-20  
 **Priority**: High  
 **Category**: Backend/Data Consistency  
-**Status**: Open
+**Status**: Closed
+
+## Resolution
+
+**Date Resolved**: 2025-08-20  
+**Implementation**: Current campaign clearing functionality implemented in backend and frontend
+
+### ✅ **Solution Implemented**
+- **Backend Enhancement**: Updated `CampaignMembershipsController#destroy` to check if leaving campaign matches user's current campaign
+- **State Management**: Added call to `CurrentCampaign.set(user: user, campaign: nil)` when leaving active campaign
+- **Data Consistency**: Ensured both database `current_campaign_id` and Redis cache are cleared properly
+- **Safety Net**: Added `after_destroy` callback in `CampaignMembership` model for direct deletions
+- **Frontend Integration**: Enhanced `CampaignsList` component to clear AppContext state when leaving active campaign
+
+### 🔧 **Fix Confirmed**
+- Users leaving their active campaign now have `current_campaign_id` properly cleared in database
+- Redis cache is updated via CurrentCampaign service to maintain consistency
+- Frontend AppContext state is cleared immediately when leaving active campaign
+- UI properly reflects no active campaign after leaving, removing "Active" badge
+- Backend and frontend state remain consistent throughout the operation
+
+**Root Cause**: Campaign membership removal didn't check or clear current campaign references  
+**Fix**: Added comprehensive current campaign clearing logic in both backend controller and frontend component  
 
 ## Description
 
