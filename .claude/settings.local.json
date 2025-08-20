@@ -57,7 +57,9 @@
       "Bash(npm run fl:*)",
       "Bash(npm run lint)",
       "Bash(nr fl)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(RAILS_ENV=test rails console --brief -e \"puts ''Users in test database:''; User.all.each { |u| puts \"\"#{u.email} (gamemaster: #{u.gamemaster})\"\" }\")",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
