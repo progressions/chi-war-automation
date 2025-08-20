@@ -3,7 +3,7 @@
 **Date**: 2025-08-18  
 **Priority**: Medium  
 **Category**: Frontend/UX  
-**Status**: Open
+**Status**: Closed
 
 ## Description
 
@@ -96,15 +96,15 @@ This feature would enhance user autonomy and reduce support requests for account
 
 ## Acceptance Criteria
 
-- [ ] User can access profile page from main navigation
-- [ ] User can view their current name, email, and account info
-- [ ] User can edit and save changes to their name
-- [ ] User can update their email address with proper validation
-- [ ] User can see all campaigns they belong to with their role in each
-- [ ] Profile updates are reflected immediately in the application
-- [ ] Form validation prevents invalid data submission
-- [ ] Success/error feedback is provided for all actions
-- [ ] Profile page is responsive and works on mobile devices
+- [x] User can access profile page from main navigation
+- [x] User can view their current name, email, and account info
+- [x] User can edit and save changes to their name
+- [x] User can update their email address with proper validation
+- [x] User can see all campaigns they belong to with their role in each
+- [x] Profile updates are reflected immediately in the application
+- [x] Form validation prevents invalid data submission
+- [x] Success/error feedback is provided for all actions
+- [x] Profile page is responsive and works on mobile devices
 
 ## Technical Requirements
 
