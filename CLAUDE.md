@@ -165,8 +165,81 @@ Test database setup:
 rails db:test:prepare
 ```
 
+### End-to-End Testing with Playwright
+
+**Test Environment Setup:**
+The Chi War application uses Playwright for end-to-end testing with a comprehensive test suite in `test-scripts/`.
+
+**Reliable Test Environment Startup:**
+```bash
+# Kill any existing processes first
+pkill -f "rails server" ; pkill -f "puma" ; pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 3
+
+# Set up test database with proper seed data
+cd shot-server
+source ~/.rvm/scripts/rvm && rvm use 3.2.2
+RAILS_ENV=test rails db:create db:migrate db:seed
+
+# Start Rails test server in background
+RAILS_ENV=test rails server -p 3000 &
+
+# Start Next.js development server in background  
+cd ../shot-client-next && npm run dev &
+
+# Wait for servers to fully initialize
+sleep 10
+```
+
+**Test Database Seed Data:**
+The test environment is seeded with:
+- **Gamemaster user**: `progressions@gmail.com` (password: `password`)
+- **Player user**: `player@example.com` (password: `password`) 
+- **Campaigns**: "Test Campaign" (active), "Secondary Campaign", "Third Campaign"
+- **User memberships**: Player user is member of multiple campaigns with "Test Campaign" as active
+- **Characters**: Sample characters for testing
+
+**Authentication in Tests:**
+Tests use the `login-helper.js` module for authentication:
+```javascript
+const { loginAsPlayer, loginAsGamemaster } = require('./login-helper');
+
+// Login as player user with seed data
+await loginAsPlayer(page, { takeScreenshot: true, screenshotPath: 'test-results' });
+
+// Login as gamemaster user with seed data  
+await loginAsGamemaster(page, { takeScreenshot: true, screenshotPath: 'test-results' });
+```
+
+**Running Playwright Tests:**
+```bash
+cd test-scripts
+
+# Run individual test scripts
+node test-current-campaign-clearing-e2e.js
+node test-campaign-activation.js
+node test-profile-page.js
+
+# Run UI validation tests (no backend integration required)
+node test-current-campaign-clearing-ui-validated.js
+
+# Run with Playwright test runner
+npx playwright test tests/current-campaign-clearing.spec.js
+```
+
+**Test Structure:**
+- `test-scripts/` - Individual Node.js test scripts using Playwright
+- `test-scripts/tests/` - Official Playwright test format `.spec.js` files
+- `login-helper.js` - Reusable authentication utilities
+- `test-results/` - Screenshots and test artifacts
+- `playwright.config.js` - Playwright configuration with server setup
+
+**Known Issues:**
+- Next.js development overlay can intercept clicks in some scenarios
+- Use `page.locator().click({ force: true })` to bypass overlay interference  
+- Backend API errors in test environment typically indicate authentication or seed data issues
+
 ### Frontend Testing
-Currently no test framework configured. Consider adding Jest/React Testing Library.
+Playwright end-to-end tests provide comprehensive frontend validation. No additional unit test framework currently configured.
 
 ### Reliable Server Startup for Testing
 
