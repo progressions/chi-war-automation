@@ -16,8 +16,8 @@ async function loginToChiWar(page, email, password, options = {}) {
   try {
     console.log(`🔐 Logging in as: ${email}`);
     
-    // Navigate to application
-    await page.goto('http://localhost:3001');
+    // Navigate to application (use test port 3005)
+    await page.goto('http://localhost:3005');
     
     // Wait for page to load and check for login form
     await page.waitForLoadState('networkidle');
