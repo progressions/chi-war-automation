@@ -83,6 +83,36 @@ npm run fl                        # Format and lint together
 npm run generate:component        # Generate new component with Plop
 ```
 
+## Test Environment Configuration
+
+**Separate Test Ports for Concurrent Development and Testing:**
+
+### Development Servers (Default)
+- **Rails**: Port 3000 (`rails server`)
+- **Next.js**: Port 3001 (`npm run dev`)
+
+### Test Servers (Isolated Testing)
+- **Rails**: Port 3004 (`rails test:server`)
+- **Next.js**: Port 3005 (`npm run test`)
+
+### Starting Test Environment
+```bash
+# Terminal 1 - Start Rails test server (cleans and seeds test DB)
+cd shot-server && rails test:server
+
+# Terminal 2 - Start Next.js test server
+cd shot-client-next && npm run test
+
+# Terminal 3 - Run E2E tests (uses ports 3004/3005)
+cd test-scripts && node test-invitation-simple.js
+```
+
+**Benefits:**
+- Keep development servers running while testing
+- Isolated test database with proper seed data
+- E2E tests use dedicated test ports (3004/3005)
+- No interference between development and testing workflows
+
 ## High-Level Architecture
 
 ### Backend Architecture
