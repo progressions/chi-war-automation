@@ -3,7 +3,7 @@
 **Date**: 2025-08-21  
 **Priority**: Medium  
 **Category**: Frontend  
-**Status**: Open
+**Status**: ✅ RESOLVED
 
 ## Description
 When using the view switcher (SpeedDial menu) to change between Table View and Mobile View on the Characters List page, the component fails to refresh the list data after filtering. This results in showing only loading skeletons instead of the filtered character data.
@@ -48,3 +48,37 @@ The issue likely affects other List pages that have similar view switcher functi
 
 ## Related Issues
 This may be part of a broader pattern affecting other List pages with view switchers and filtering functionality.
+
+## Resolution
+
+**Date Resolved**: 2025-08-21
+
+### Root Cause
+The issue was caused by missing `viewMode` dependency in the `useEffect` hook that triggers data refetching in `List.tsx`. When users switched between Table and Mobile views, the component would re-render but would not trigger a data refetch, resulting in persistent loading skeletons.
+
+### Fix Applied
+**File**: `shot-client-next/src/components/characters/List.tsx:106`
+
+**Before**:
+```tsx
+}, [filters, fetchCharacters, router]) // Missing viewMode dependency
+```
+
+**After**:
+```tsx  
+}, [filters, fetchCharacters, router, viewMode]) // Added viewMode dependency
+```
+
+### Impact
+- ✅ View mode changes now properly trigger data refetch
+- ✅ Loading skeletons resolve immediately when switching views
+- ✅ Filter state is preserved across view mode changes
+- ✅ No performance impact - only refetches when view actually changes
+
+### Testing
+- Manual testing confirmed fix resolves the issue
+- Characters page successfully loads filtered data after view switches
+- No unintended side effects observed
+
+### Technical Details
+The fix ensures that when `setViewMode()` is called by the SpeedDial menu, the `useEffect` hook detects the `viewMode` change and re-runs `fetchCharacters(filters)` with the current filter state. This follows proper React dependency array patterns and ensures data consistency across view mode changes.

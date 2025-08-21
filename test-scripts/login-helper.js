@@ -83,7 +83,7 @@ async function loginToChiWar(page, email, password, options = {}) {
  * @param {Object} options - Optional configuration
  */
 async function loginAsGamemaster(page, options = {}) {
-  return loginToChiWar(page, 'progressions@gmail.com', 'password', options);
+  return loginToChiWar(page, 'progressions@gmail.com', 'password123', options);
 }
 
 /**
@@ -92,7 +92,7 @@ async function loginAsGamemaster(page, options = {}) {
  * @param {Object} options - Optional configuration
  */
 async function loginAsPlayer(page, options = {}) {
-  return loginToChiWar(page, 'player@example.com', 'password', options);
+  return loginToChiWar(page, 'player@example.com', 'password123', options);
 }
 
 module.exports = {
