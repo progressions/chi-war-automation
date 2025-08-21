@@ -3,7 +3,7 @@
 **Date**: 2025-08-21  
 **Priority**: Medium  
 **Category**: UI/UX  
-**Status**: Completed
+**Status**: Closed
 
 ## Description
 Many pages in the Chi War application were missing proper HTML page titles, making it difficult for users to identify tabs in their browser and impacting SEO and accessibility.
