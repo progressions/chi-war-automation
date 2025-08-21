@@ -3,6 +3,7 @@
 **Date**: 2025-08-18
 **Priority**: Medium
 **Type**: UX Improvement
+**Status**: ✅ COMPLETED
 
 ## Issue Description
 
@@ -31,10 +32,10 @@ When users try to log in with an unconfirmed account, they are not given clear f
 
 ## Acceptance Criteria
 
-- [ ] Clear error message when login fails due to unconfirmed account
-- [ ] Message explains that email confirmation is required
-- [ ] Optional: Add resend confirmation email functionality
-- [ ] Error message is user-friendly and actionable
+- [x] Clear error message when login fails due to unconfirmed account
+- [x] Message explains that email confirmation is required
+- [x] Optional: Add resend confirmation email functionality
+- [x] Error message is user-friendly and actionable
 
 ## Impact
 
@@ -42,8 +43,28 @@ When users try to log in with an unconfirmed account, they are not given clear f
 - Reduces confusion for new users
 - Reduces support requests about login issues
 
+## Implementation Summary
+
+**Backend Changes:**
+- Enhanced `Users::SessionsController#create` to check confirmation status
+- Added specific error response for unconfirmed accounts with `error_type: 'unconfirmed_account'`
+- Created `Users::ConfirmationsController#resend` endpoint with rate limiting (5 requests/minute per IP)
+- Added route `/users/confirmation/resend` in devise_scope
+
+**Frontend Changes:**  
+- Updated login page (`src/app/(auth)/login/page.tsx`) with confirmation error handling
+- Added state management for unconfirmed accounts and resend functionality
+- Created warning alert with clear messaging and "Resend Confirmation Email" button
+- Added success feedback for resend requests
+
+**Security Features:**
+- Rate limiting on resend requests (existing rate limiting infrastructure)
+- Generic success messages that don't reveal if email exists
+- OWASP-compliant approach to confirmation messaging
+
 ## Related Files
 
-- Frontend: Login form components
-- Backend: Devise sessions controller
-- Error handling for authentication failures
+- Backend: `app/controllers/users/sessions_controller.rb` (modified)
+- Backend: `app/controllers/users/confirmations_controller.rb` (modified)
+- Backend: `config/routes.rb` (modified)
+- Frontend: `src/app/(auth)/login/page.tsx` (modified)

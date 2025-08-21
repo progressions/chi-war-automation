@@ -25,5 +25,5 @@ npm run dev
 
 - [ ] Kill any Rails server that's still running on port 3000
 - [ ] Kill any Next.js server that's still running on port 3001
-- [ ] Start Rails server on port 3000 using the above commands
-- [ ] Start Next.js server on port 3001 using the above commands
+- [ ] Start Rails server on port 3000 using the above commands. Be sure to run it so it appears in "Bashes".
+- [ ] Start Next.js server on port 3001 using the above commands. Be sure to run it so it appears in "Bashes".
