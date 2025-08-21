@@ -12,6 +12,7 @@ This is a coordination repository for managing Feng Shui 2 RPG campaigns with tw
 
 ```
 chi-war/                          # Root coordination repository
+├── create-invitation.sh          # Quick script to generate test invitations (./create-invitation.sh [email])
 ├── shot-server/                  # Rails API backend (separate git repo, gitignored)
 │   ├── app/                      # Rails application code
 │   │   ├── controllers/          # API controllers (v1, v2)
@@ -90,6 +91,48 @@ npm run generate:component        # Generate new component with Plop
 ### Development Servers (Default)
 - **Rails**: Port 3000 (`rails server`)
 - **Next.js**: Port 3001 (`npm run dev`)
+
+### Starting Development Environment
+
+**Complete Development Environment Setup:**
+```bash
+# Kill all existing servers
+pkill -f "rails server" ; pkill -f "puma" ; pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 3
+
+# Start Rails development server in background
+bash -c 'cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-server && source ~/.rvm/scripts/rvm && rvm use 3.2.2 && rails server -p 3000' &
+
+# Start Next.js development server in background
+bash -c 'cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-client-next && npm run dev' &
+
+# Wait for servers to start
+sleep 10
+
+# Verify servers are running
+curl -s http://localhost:3000/api/v2/users/current | head -1  # Should return auth error
+curl -s http://localhost:3001 | head -1                      # Should return redirect
+```
+
+**Individual Server Startup:**
+
+For Rails development server:
+```bash
+cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-server
+source ~/.rvm/scripts/rvm && rvm use 3.2.2
+rails server -p 3000
+```
+
+For Next.js development server:
+```bash
+cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-client-next
+npm run dev
+```
+
+**Notes:**
+- Rails development server takes ~8-10 seconds to fully start
+- Next.js server is usually ready in ~3-5 seconds with Turbopack
+- Both servers should show proper error responses when running correctly
+- Rails development environment uses the main database (not test database)
 
 ### Test Servers (Isolated Testing)
 - **Rails**: Port 3004 (`rails test:server`)
