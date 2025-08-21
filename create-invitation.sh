@@ -11,7 +11,7 @@ echo "Creating invitation for: $EMAIL"
 echo "Logging in..."
 TOKEN=$(curl -s -X POST http://localhost:3000/users/sign_in \
   -H "Content-Type: application/json" \
-  -d "{\"user\":{\"email\":\"progressions@gmail.com\",\"password\":\"password\"}}" \
+  -d "{\"user\":{\"email\":\"progressions@gmail.com\",\"password\":\"password123\"}}" \
   -i | grep -i '^authorization:' | cut -d' ' -f2- | tr -d '\r\n')
 
 if [ -z "$TOKEN" ]; then

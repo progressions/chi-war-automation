@@ -11,13 +11,13 @@
  * @param {string} options.screenshotPath - Base path for screenshots
  */
 async function loginToChiWar(page, email, password, options = {}) {
-  const { takeScreenshot = false, screenshotPath = 'test-results' } = options;
+  const { takeScreenshot = false, screenshotPath = 'test-results', port = 3001 } = options;
   
   try {
     console.log(`🔐 Logging in as: ${email}`);
     
-    // Navigate to application (use development port 3001)
-    await page.goto('http://localhost:3001');
+    // Navigate to application (use specified port, default 3001)
+    await page.goto(`http://localhost:${port}`);
     
     // Wait for page to load and check for login form
     await page.waitForLoadState('networkidle');
