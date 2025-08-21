@@ -1,0 +1,6 @@
+[submodule "shot-server"]
+	path = shot-server
+	url = https://github.com/progressions/shot-counter.git
+[submodule "shot-client-next"]
+	path = shot-client-next
+	url = https://github.com/progressions/shot-client-next.git
