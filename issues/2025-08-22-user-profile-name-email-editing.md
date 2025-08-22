@@ -3,7 +3,7 @@
 **Date**: 2025-08-22  
 **Priority**: Medium  
 **Category**: Frontend  
-**Status**: Completed
+**Status**: Closed
 
 ## Description
 The user profile page should allow users to edit their First Name, Last Name, and email address. For the email address field, implement a confirmation dialogue similar to existing email change components to prevent accidental changes to critical account information.
