@@ -3,7 +3,7 @@
 **Date**: 2025-01-22  
 **Priority**: Medium  
 **Category**: Frontend  
-**Status**: Open
+**Status**: Completed
 
 ## Description
 When using the SpeedDial on List pages to switch from Table View to Mobile View and then back to Table View, the table shows only the skeleton loading screen instead of the actual table contents. This affects all Table components across the application.
@@ -67,3 +67,24 @@ Potential approaches:
 
 ## Related Issues
 This may be related to recent TypeScript types consolidation work if it affected state management types or component prop interfaces.
+
+## Solution Implemented
+**Date**: 2025-08-22  
+**Fixed by**: Adding `viewMode` to useEffect dependencies in all List components
+
+**Root Cause**: The useEffect hook that handles data fetching was missing `viewMode` in its dependency array. When users switched from Mobile View back to Table View, no data refetch was triggered, leaving the table in a skeleton loading state.
+
+**Solution**: Added `viewMode` to the dependency array of the useEffect that calls the fetch function in all 11 entity List components:
+- campaigns/List.tsx
+- characters/List.tsx (already had fix)
+- fights/List.tsx
+- vehicles/List.tsx
+- users/List.tsx
+- parties/List.tsx
+- factions/List.tsx
+- junctures/List.tsx
+- sites/List.tsx
+- weapons/List.tsx
+- schticks/List.tsx
+
+**Result**: Now when `viewMode` changes, it automatically triggers a data refetch with the current filters, ensuring the table displays actual data instead of skeletons.

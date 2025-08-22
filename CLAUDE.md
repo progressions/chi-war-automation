@@ -4,9 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a coordination repository for managing Feng Shui 2 RPG campaigns with two separate applications:
+This is a coordination repository for managing Feng Shui 2 RPG campaigns with three separate applications:
 - **shot-server**: Ruby on Rails 8.0 API backend (port 3000) - separate git repository
-- **shot-client-next**: Next.js 15.4 frontend (port 3001) - separate git repository
+- **shot-client-next**: Next.js 15.4 frontend (port 3001) - separate git repository, current main frontend
+- **legacy-client**: Original Next.js frontend - calls API v1 endpoints, maintained for backward compatibility
 
 ### Directory Structure
 
@@ -36,6 +37,15 @@ chi-war/                          # Root coordination repository
 │   │   └── types/                # TypeScript type definitions
 │   ├── plop-templates/           # Code generation templates
 │   └── CLAUDE.md                 # Frontend-specific documentation
+├── legacy-client/                # Original Next.js frontend (separate git repo)
+│   ├── components/               # React components organized by feature
+│   ├── pages/                    # Next.js Pages Router structure
+│   ├── contexts/                 # React context providers
+│   ├── services/                 # Business logic services
+│   ├── reducers/                 # State management
+│   ├── utils/                    # API clients and utilities
+│   ├── types/                    # TypeScript type definitions
+│   └── package.json              # Dependencies and scripts
 ├── issues/                       # Issue tracking (markdown files)
 │   ├── TEMPLATE.md               # Issue template
 │   └── *.md                      # Individual issue files
