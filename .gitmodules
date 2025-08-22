@@ -4,3 +4,9 @@
 [submodule "shot-client-next"]
 	path = shot-client-next
 	url = https://github.com/progressions/shot-client-next.git
+[submodule "shot-client"]
+	path = shot-client
+	url = https://github.com/progressions/shot-client.git
+[submodule "legacy-client"]
+	path = legacy-client
+	url = https://github.com/progressions/shot-client.git
