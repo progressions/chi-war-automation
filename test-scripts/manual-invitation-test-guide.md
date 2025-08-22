@@ -7,10 +7,10 @@ This guide provides step-by-step instructions for manually testing the complete 
 1. Start development servers:
    ```bash
    # Terminal 1 - Rails server
-   cd shot-server && rails server -p 3000
+   cd shot-server && rails server -p 3004
    
    # Terminal 2 - Next.js server  
-   cd shot-client-next && npm run dev
+   cd shot-client-next && npm run dev -p 3005
    ```
 
 2. Ensure test users exist in database:
