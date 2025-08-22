@@ -2,7 +2,7 @@
 // This script focuses specifically on the login form interaction
 
 const { chromium } = require('playwright');
-
+const TEST_CONFIG = require('./test-config')
 async function debugLogin() {
   console.log('🔍 Starting Login Debug...');
   
@@ -38,7 +38,7 @@ async function debugLogin() {
     });
 
     console.log('📍 Step 1: Navigate to login page...');
-    await page.goto('http://localhost:3001/login');
+    await page.goto(TEST_CONFIG.getLoginUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('text=Login to Chi War', { timeout: 10000 });
     

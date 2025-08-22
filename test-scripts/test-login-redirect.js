@@ -2,7 +2,7 @@
 // This script tests the login redirect functionality
 
 const { chromium } = require('playwright');
-
+const TEST_CONFIG = require('./test-config')
 async function runLoginRedirectTest() {
   console.log('🚀 Starting Login Redirect Test...');
   
@@ -14,7 +14,7 @@ async function runLoginRedirectTest() {
   try {
     // Step 1: Try to access a protected page directly (fights page)
     console.log('📍 Step 1: Attempting to access protected fights page directly...');
-    await page.goto('http://localhost:3001/fights');
+    await page.goto(TEST_CONFIG.getFightsUrl());
     
     // Wait for redirect to login page
     await page.waitForLoadState('networkidle');
@@ -72,7 +72,7 @@ async function runLoginRedirectTest() {
     // Check if we were redirected back to the fights page
     if (postLoginUrl.includes('/fights')) {
       console.log('✅ Successfully redirected back to fights page after login!');
-    } else if (postLoginUrl === 'http://localhost:3001/') {
+    } else if (postLoginUrl === TEST_CONFIG.getFrontendUrl() + '/') {
       console.log('⚠️ Redirected to homepage instead of fights page');
       console.log('This might indicate the redirect functionality needs debugging');
     } else {
@@ -85,14 +85,14 @@ async function runLoginRedirectTest() {
     
     // Step 5: Test direct homepage access (should work without redirect)
     console.log('📍 Step 5: Testing direct homepage access...');
-    await page.goto('http://localhost:3001/');
+    await page.goto(TEST_CONFIG.getFrontendUrl() + '/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     
     const homepageUrl = page.url();
     console.log('Homepage URL:', homepageUrl);
     
-    if (homepageUrl === 'http://localhost:3001/') {
+    if (homepageUrl === TEST_CONFIG.getFrontendUrl() + '/') {
       console.log('✅ Homepage accessible without redirect');
     } else {
       console.log('⚠️ Unexpected behavior on homepage access');

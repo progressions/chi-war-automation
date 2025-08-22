@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { loginAsPlayer, loginAsGamemaster } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function testCurrentCampaignClearingFinal() {
   console.log('🧪 Starting comprehensive current campaign clearing test...');
   console.log('This test validates both UI behavior and backend integration');
@@ -23,7 +23,7 @@ async function testCurrentCampaignClearingFinal() {
     });
 
     console.log('2. Navigating to profile page...');
-    await page.goto('http://localhost:3001/profile');
+    await page.goto(TEST_CONFIG.getProfileUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('text=Campaigns', { timeout: 15000 });
     console.log('✓ Profile page loaded');
@@ -164,7 +164,7 @@ async function testCurrentCampaignClearingFinal() {
       // First, we need to activate a campaign if we don't have one
       if (!activeCampaign) {
         console.log('  -> Setting up: Need to activate a campaign first...');
-        await page.goto('http://localhost:3001/campaigns');
+        await page.goto(TEST_CONFIG.getCampaignsUrl());
         await page.waitForLoadState('networkidle');
         
         try {
@@ -187,7 +187,7 @@ async function testCurrentCampaignClearingFinal() {
         }
         
         // Return to profile page
-        await page.goto('http://localhost:3001/profile');
+        await page.goto(TEST_CONFIG.getProfileUrl());
         await page.waitForLoadState('networkidle');
         await page.waitForSelector('text=Campaigns', { timeout: 15000 });
       }

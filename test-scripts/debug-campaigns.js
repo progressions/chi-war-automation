@@ -2,7 +2,7 @@
 // This script tests if authenticated users can access the campaigns page
 
 const { chromium } = require('playwright');
-
+const TEST_CONFIG = require('./test-config')
 async function debugCampaigns() {
   console.log('📊 Starting Campaigns Debug...');
   
@@ -13,7 +13,7 @@ async function debugCampaigns() {
   try {
     // Step 1: Login first
     console.log('📍 Step 1: Logging in...');
-    await page.goto('http://localhost:3001/login');
+    await page.goto(TEST_CONFIG.getLoginUrl());
     await page.waitForLoadState('networkidle');
     
     const emailField = page.locator('input').first();
@@ -28,7 +28,7 @@ async function debugCampaigns() {
     
     // Step 2: Try to access campaigns directly
     console.log('📍 Step 2: Accessing /campaigns directly...');
-    await page.goto('http://localhost:3001/campaigns');
+    await page.goto(TEST_CONFIG.getCampaignsUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     
@@ -50,7 +50,7 @@ async function debugCampaigns() {
     
     // Step 3: Try to access fights page to test redirect
     console.log('📍 Step 3: Accessing /fights to test redirect...');
-    await page.goto('http://localhost:3001/fights');
+    await page.goto(TEST_CONFIG.getFightsUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     

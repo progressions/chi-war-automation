@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { loginAsPlayer } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function testInvitationEdgeCases() {
   console.log('Starting invitation edge cases test...');
   
@@ -15,7 +15,7 @@ async function testInvitationEdgeCases() {
   try {
     // EDGE CASE 1: Invalid invitation ID
     console.log('\\n1. Testing invalid invitation ID...');
-    await page.goto('http://localhost:3001/redeem/invalid-id-123');
+    await page.goto('TEST_CONFIG.getFrontendUrl()/redeem/invalid-id-123');
     
     try {
       await page.waitForSelector('text=not found', { timeout: 10000 });
@@ -54,7 +54,7 @@ async function testInvitationEdgeCases() {
     // EDGE CASE 2: Non-existent invitation ID (valid format but doesn't exist)
     console.log('\\n2. Testing non-existent invitation ID...');
     const fakeId = '00000000-0000-0000-0000-000000000000'; // Valid UUID format but doesn't exist
-    await page.goto(`http://localhost:3001/redeem/${fakeId}`);
+    await page.goto(`TEST_CONFIG.getFrontendUrl()/redeem/${fakeId}`);
     
     try {
       await page.waitForSelector('text=not found', { timeout: 10000 });
@@ -97,7 +97,7 @@ async function testInvitationEdgeCases() {
     console.log('3a. Creating test invitation via API...');
     
     // Login as gamemaster first to get JWT
-    await page.goto('http://localhost:3001/login');
+    await page.goto(TEST_CONFIG.getLoginUrl());
     await page.fill('input[type="email"]', 'progressions@gmail.com');
     await page.fill('input[type="password"]', 'password');
     await page.click('button[type="submit"]');
@@ -107,7 +107,7 @@ async function testInvitationEdgeCases() {
     
     // Create invitation via API
     const testEmail = `edge-case-test-${Date.now()}@example.com`;
-    const createResponse = await fetch('http://localhost:3000/api/v2/invitations', {
+    const createResponse = await fetch('TEST_CONFIG.getBackendUrl()/api/v2/invitations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ async function testInvitationEdgeCases() {
       });
     });
     
-    await page.goto(`http://localhost:3001/redeem/${invitation.id}`);
+    await page.goto(`TEST_CONFIG.getFrontendUrl()/redeem/${invitation.id}`);
     await page.waitForSelector('text=Campaign Invitation', { timeout: 10000 });
     await page.waitForSelector('button:has-text("Login to Accept")', { timeout: 5000 });
     console.log('✓ Unauthenticated user can view invitation details');
@@ -149,7 +149,7 @@ async function testInvitationEdgeCases() {
     });
     
     // Try to redeem the invitation
-    await page.goto(`http://localhost:3001/redeem/${invitation.id}`);
+    await page.goto(`TEST_CONFIG.getFrontendUrl()/redeem/${invitation.id}`);
     await page.waitForSelector('text=Campaign Invitation', { timeout: 10000 });
     
     const acceptButton = page.locator('button:has-text("Accept Invitation")');
@@ -193,7 +193,7 @@ async function testInvitationEdgeCases() {
 
     // EDGE CASE 5: Test malformed invitation URL
     console.log('\\n5. Testing malformed invitation URL...');
-    await page.goto('http://localhost:3001/redeem/not-a-uuid');
+    await page.goto('TEST_CONFIG.getFrontendUrl()/redeem/not-a-uuid');
     
     try {
       await page.waitForSelector('text=not found', { timeout: 10000 });

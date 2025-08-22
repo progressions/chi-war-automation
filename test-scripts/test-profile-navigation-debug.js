@@ -3,7 +3,7 @@
 
 const { chromium } = require('playwright');
 const { loginAsPlayer } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function debugProfileNavigation() {
   console.log('🔍 Starting Profile Navigation Debug...');
   
@@ -85,7 +85,7 @@ async function debugProfileNavigation() {
     
     // Try direct navigation to profile
     console.log('🔍 Trying direct navigation to /profile...');
-    await page.goto('http://localhost:3001/profile');
+    await page.goto('TEST_CONFIG.getProfileUrl()');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     

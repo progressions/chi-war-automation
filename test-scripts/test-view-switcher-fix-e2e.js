@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test')
 const { loginAsGamemaster } = require('./login-helper')
+const TEST_CONFIG = require('./test-config')
 
 test.describe('View Switcher Bug Fix E2E', () => {
   test('should refresh data when switching between Table and Mobile views with filters applied', async ({ page }) => {
@@ -11,7 +12,7 @@ test.describe('View Switcher Bug Fix E2E', () => {
     })
 
     // Step 2: Navigate to Characters page
-    await page.goto('http://localhost:3001/characters')
+    await page.goto('TEST_CONFIG.getCharactersUrl()')
     await page.waitForSelector('.MuiDataGrid-root', { timeout: 10000 })
     await page.screenshot({ path: 'test-results/e2e-02-characters-page.png' })
 
@@ -87,7 +88,7 @@ test.describe('View Switcher Bug Fix E2E', () => {
   test('should work without filters applied', async ({ page }) => {
     // Test the fix works even without filters
     await loginAsGamemaster(page)
-    await page.goto('http://localhost:3001/characters')
+    await page.goto('TEST_CONFIG.getCharactersUrl()')
     await page.waitForSelector('.MuiDataGrid-root', { timeout: 10000 })
 
     const initialRows = await page.locator('.MuiDataGrid-row').count()

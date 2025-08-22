@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { loginAsGamemaster, loginAsPlayer } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function testInvitationEmailFlowE2E() {
   console.log('Starting invitation email flow E2E test...');
   
@@ -18,7 +18,7 @@ async function testInvitationEmailFlowE2E() {
     console.log('1. Logging in as gamemaster to create invitation through UI...');
     
     // Navigate to login page on development server
-    await page.goto('http://localhost:3001/login');
+    await page.goto(TEST_CONFIG.getLoginUrl());
     await page.waitForSelector('text=Login to Chi War', { timeout: 10000 });
     
     // Fill in gamemaster credentials
@@ -32,7 +32,7 @@ async function testInvitationEmailFlowE2E() {
 
     // Navigate to campaigns page  
     console.log('2. Navigating to campaigns page...');
-    await page.goto('http://localhost:3001/campaigns');
+    await page.goto(TEST_CONFIG.getCampaignsUrl());
     await page.waitForSelector('[role="grid"]', { timeout: 15000 });
     console.log('✓ Campaigns page loaded');
 
@@ -110,7 +110,7 @@ async function testInvitationEmailFlowE2E() {
     if (!capturedInvitationId) {
       console.log('6. Fetching invitation ID from backend API...');
       const jwt = await campaignPage.evaluate(() => localStorage.getItem('jwtToken'));
-      const response = await fetch('http://localhost:3000/api/v2/invitations', {
+      const response = await fetch('TEST_CONFIG.getBackendUrl()/api/v2/invitations', {
         headers: {
           'Authorization': `Bearer ${jwt}`
         }
@@ -129,7 +129,7 @@ async function testInvitationEmailFlowE2E() {
     }
     
     // Construct the invitation URL that would be in the email
-    invitationUrl = `http://localhost:3001/redeem/${capturedInvitationId}`;
+    invitationUrl = `TEST_CONFIG.getFrontendUrl()/redeem/${capturedInvitationId}`;
     console.log(`✓ Invitation URL that would be emailed: ${invitationUrl}`);
     
     await campaignPage.screenshot({ path: 'test-results/email-flow-04-invitation-created.png', fullPage: true });

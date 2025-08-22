@@ -2,7 +2,7 @@
 // This script automates the complete fight creation and management flow
 
 const { chromium } = require('playwright');
-
+const TEST_CONFIG = require('./test-config')
 async function runFightCreationTest() {
   console.log('🚀 Starting Fight Creation Test...');
   
@@ -14,7 +14,7 @@ async function runFightCreationTest() {
   try {
     // Step 1: Navigate to login page
     console.log('📍 Step 1: Navigating to login page...');
-    await page.goto('http://localhost:3001');
+    await page.goto(TEST_CONFIG.getFrontendUrl());
     
     // Take a screenshot to see what we're dealing with
     await page.screenshot({ path: 'test-results/login-page.png', fullPage: true });
@@ -65,7 +65,7 @@ async function runFightCreationTest() {
       const currentUrl = page.url();
       if (currentUrl.includes('/login')) {
         console.log('🔄 Still on login page, manually navigating to home page...');
-        await page.goto('http://localhost:3001/');
+        await page.goto(TEST_CONFIG.getFrontendUrl() + '/');
         await page.waitForLoadState('networkidle');
         console.log('Current URL after manual navigation:', page.url());
       } else {

@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { loginAsPlayer, loginAsGamemaster } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function testCurrentCampaignClearingUIOnly() {
   console.log('🧪 Starting current campaign clearing UI test...');
   console.log('Note: This test validates UI behavior and expected user interactions');
@@ -23,7 +23,7 @@ async function testCurrentCampaignClearingUIOnly() {
     });
 
     console.log('2. Navigating to profile page...');
-    await page.goto('http://localhost:3001/profile');
+    await page.goto(TEST_CONFIG.getProfileUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('text=Campaigns', { timeout: 15000 });
     console.log('✓ Profile page loaded');

@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { loginAsPlayer, loginAsGamemaster } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function testNoCampaignFlow() {
   console.log('Starting no-campaign flow test...');
   
@@ -15,7 +15,7 @@ async function testNoCampaignFlow() {
   try {
     // Clear any cached data first
     console.log('1. Clearing any cached data and cookies...');
-    await page.goto('http://localhost:3001');
+    await page.goto(TEST_CONFIG.getFrontendUrl());
     await page.evaluate(() => {
       localStorage.clear();
       sessionStorage.clear();
@@ -59,7 +59,7 @@ async function testNoCampaignFlow() {
         
         // Navigate directly to campaigns page since that's where no-campaign users should go
         console.log('4. Navigating to campaigns page...');
-        await page.goto('http://localhost:3001/campaigns');
+        await page.goto(TEST_CONFIG.getCampaignsUrl());
         await page.waitForTimeout(3000);
         
         // Debug: Check what page we're actually on
@@ -113,7 +113,7 @@ async function testNoCampaignFlow() {
 
     // Try to access a protected route directly
     console.log('6. Testing protected route access...');
-    await page.goto('http://localhost:3001/characters');
+    await page.goto(TEST_CONFIG.getCharactersUrl());
     
     // Should be redirected to campaigns
     await page.waitForTimeout(2000);
@@ -141,7 +141,7 @@ async function testNoCampaignFlow() {
     
     for (const route of protectedRoutes) {
       console.log(`8. Testing protection for ${route}...`);
-      await page.goto(`http://localhost:3001${route}`);
+      await page.goto(`TEST_CONFIG.getFrontendUrl()${route}`);
       await page.waitForTimeout(1500);
       
       const url = page.url();

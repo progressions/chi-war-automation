@@ -2,7 +2,7 @@
 // This script just clicks "Create" on characters page to see what appears
 
 const { chromium } = require('playwright');
-
+const TEST_CONFIG = require('./test-config')
 async function runCharacterCreateInspectionTest() {
   console.log('🔍 Starting Character Create Inspection Test...');
   
@@ -14,7 +14,7 @@ async function runCharacterCreateInspectionTest() {
   try {
     // Step 1: Navigate and login
     console.log('📍 Step 1: Navigating to application and logging in...');
-    await page.goto('http://localhost:3001');
+    await page.goto(TEST_CONFIG.getFrontendUrl());
     
     await page.waitForSelector('text=Login to Chi War', { timeout: 10000 });
     
@@ -30,7 +30,7 @@ async function runCharacterCreateInspectionTest() {
     
     // Step 2: Navigate to characters page
     console.log('📍 Step 2: Navigating to characters page...');
-    await page.goto('http://localhost:3001/characters');
+    await page.goto(TEST_CONFIG.getCharactersUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     

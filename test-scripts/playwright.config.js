@@ -2,6 +2,7 @@
 // This configuration optimizes Playwright for Chi War testing scenarios
 
 const { defineConfig, devices } = require('@playwright/test');
+const TEST_CONFIG = require('./test-config');
 
 module.exports = defineConfig({
   // Test directory
@@ -29,7 +30,7 @@ module.exports = defineConfig({
   // Shared settings for all tests
   use: {
     // Base URL for tests
-    baseURL: 'http://localhost:3001',
+    baseURL: TEST_CONFIG.getFrontendUrl(),
     
     // Collect trace when retrying the failed test
     trace: 'on-first-retry',

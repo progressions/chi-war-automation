@@ -1,6 +1,6 @@
 const { chromium } = require('playwright')
 const { loginAsGamemaster } = require('./login-helper')
-
+const TEST_CONFIG = require('./test-config')
 async function validateViewSwitcherFix() {
   console.log('🧪 E2E Validation: View Switcher Fix')
   console.log('================================================')
@@ -33,7 +33,7 @@ async function validateViewSwitcherFix() {
     testResults.loginSuccess = true
     console.log('✅ Login successful')
 
-    await page.goto('http://localhost:3001/characters')
+    await page.goto('TEST_CONFIG.getCharactersUrl()')
     await page.waitForSelector('.MuiDataGrid-root', { timeout: 10000 })
     await page.screenshot({ path: 'test-results/e2e-val-01-characters-page.png' })
 

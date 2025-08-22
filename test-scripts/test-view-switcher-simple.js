@@ -1,5 +1,6 @@
 const { chromium } = require('playwright')
 const { loginAsGamemaster } = require('./login-helper')
+const TEST_CONFIG = require('./test-config')
 
 async function testViewSwitcherSimple() {
   console.log('🐛 Testing View Switcher Bug - Simple Version')
@@ -21,7 +22,7 @@ async function testViewSwitcherSimple() {
 
     // Step 2: Navigate to Characters page
     console.log('📝 Step 2: Navigating to Characters page...')
-    await page.goto('http://localhost:3001/characters')
+    await page.goto(TEST_CONFIG.getCharactersUrl())
     await page.waitForSelector('[data-testid="characters-list"], .MuiDataGrid-root, [role="grid"]', { timeout: 10000 })
     await page.screenshot({ path: 'test-results/simple-01-characters-page.png' })
     console.log('✅ Characters page loaded')

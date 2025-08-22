@@ -2,7 +2,7 @@
 // This script follows the actual carousel flow: PersonAdd icon → Confirmation dialog → Confirm
 
 const { chromium } = require('playwright');
-
+const TEST_CONFIG = require('./test-config')
 async function runCharacterCreationTest() {
   console.log('🚀 Starting Corrected Character Creation Test...');
   
@@ -14,7 +14,7 @@ async function runCharacterCreationTest() {
   try {
     // Step 1: Navigate and login
     console.log('📍 Step 1: Navigating to application and logging in...');
-    await page.goto('http://localhost:3001');
+    await page.goto(TEST_CONFIG.getFrontendUrl());
     
     await page.waitForSelector('text=Login to Chi War', { timeout: 10000 });
     
@@ -30,13 +30,13 @@ async function runCharacterCreationTest() {
     
     // Step 2: Navigate to characters and open create
     console.log('📍 Step 2: Opening character creation...');
-    await page.goto('http://localhost:3001/characters');
+    await page.goto(TEST_CONFIG.getCharactersUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     
     // Navigate directly to character creation page to avoid SpeedDial issues
     console.log('🔄 Navigating directly to character creation page...');
-    await page.goto('http://localhost:3001/characters/create');
+    await page.goto('TEST_CONFIG.getFrontendUrl()/characters/create');
     await page.waitForLoadState('networkidle');
     console.log('✅ Opened character creation directly');
     

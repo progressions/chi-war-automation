@@ -8,7 +8,7 @@ async function quickCacheTest() {
 
   try {
     console.log('1. Navigating to login page...')
-    await page.goto('http://localhost:3001/login', { waitUntil: 'domcontentloaded', timeout: 60000 })
+    await page.goto('TEST_CONFIG.getFrontendUrl()/login', { waitUntil: 'domcontentloaded', timeout: 60000 })
     
     console.log('2. Logging in as gamemaster...')
     await page.fill('input[type="email"]', 'progressions@gmail.com')
@@ -16,7 +16,7 @@ async function quickCacheTest() {
     await page.click('button[type="submit"]')
     
     // Wait for redirect after login
-    await page.waitForURL('http://localhost:3001/', { timeout: 30000 })
+    await page.waitForURL(TEST_CONFIG.getFrontendUrl() + '/', { timeout: 30000 })
     console.log('   ✓ Login successful, redirected to home')
     
     console.log('3. Checking cookies and cache after login...')

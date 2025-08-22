@@ -1,6 +1,8 @@
 // Network Validation Utility for E2E Tests
 // Provides API contract validation for Playwright tests
 
+const TEST_CONFIG = require('./test-config');
+
 class NetworkValidator {
   constructor(page, config = {}) {
     this.page = page;
@@ -8,7 +10,7 @@ class NetworkValidator {
       logRequests: config.logRequests !== false, // Default true
       logResponses: config.logResponses !== false, // Default true
       validateResponseBodies: config.validateResponseBodies !== false, // Default true
-      baseUrl: config.baseUrl || 'http://localhost:3000',
+      baseUrl: config.baseUrl || TEST_CONFIG.getBackendUrl(),
       ...config
     };
     

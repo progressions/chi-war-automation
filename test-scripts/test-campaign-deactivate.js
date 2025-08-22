@@ -3,7 +3,7 @@ const path = require('path');
 
 // Import login helper
 const { loginAsGamemaster } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 (async () => {
   console.log('Starting campaign deactivate test...');
   
@@ -22,7 +22,7 @@ const { loginAsGamemaster } = require('./login-helper');
     
     // Step 2: Navigate to campaigns page
     console.log('Navigating to campaigns page...');
-    await page.goto('http://localhost:3001/campaigns');
+    await page.goto(TEST_CONFIG.getCampaignsUrl());
     await page.waitForTimeout(2000);
     
     // Take screenshot of campaigns page

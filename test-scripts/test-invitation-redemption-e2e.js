@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { loginAsGamemaster, loginAsPlayer } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function testInvitationRedemptionE2E() {
   console.log('Starting invitation redemption E2E test...');
   
@@ -23,7 +23,7 @@ async function testInvitationRedemptionE2E() {
 
     // Navigate to campaigns page  
     console.log('2. Navigating to campaigns page...');
-    await page.goto('http://localhost:3001/campaigns');
+    await page.goto(TEST_CONFIG.getCampaignsUrl());
     await page.waitForSelector('[role="grid"]', { timeout: 15000 });
     console.log('✓ Campaigns page loaded');
 
@@ -76,7 +76,7 @@ async function testInvitationRedemptionE2E() {
     
     // Get invitation ID by checking the backend directly
     console.log('6. Fetching invitation ID from backend...');
-    const response = await fetch('http://localhost:3000/api/v2/invitations', {
+    const response = await fetch('TEST_CONFIG.getBackendUrl()/api/v2/invitations', {
       headers: {
         'Authorization': `Bearer ${await page.evaluate(() => localStorage.getItem('jwtToken'))}`
       }
@@ -96,7 +96,7 @@ async function testInvitationRedemptionE2E() {
     // STEP 2: Test public invitation page access (no auth required)
     console.log('\\n7. Testing public invitation page access...');
     const publicPage = await context.newPage();
-    await publicPage.goto(`http://localhost:3001/redeem/${invitationId}`);
+    await publicPage.goto(`TEST_CONFIG.getFrontendUrl()/redeem/${invitationId}`);
     await publicPage.waitForSelector('text=Campaign Invitation', { timeout: 10000 });
     console.log('✓ Public invitation page loaded without authentication');
     
@@ -197,7 +197,7 @@ async function testInvitationRedemptionE2E() {
     // STEP 6: Verify invitation was consumed (should no longer exist)
     console.log('\\n11. Verifying invitation was consumed...');
     const verifyPage = await context.newPage();
-    await verifyPage.goto(`http://localhost:3001/redeem/${invitationId}`);
+    await verifyPage.goto(`TEST_CONFIG.getFrontendUrl()/redeem/${invitationId}`);
     
     try {
       await verifyPage.waitForSelector('text=not found', { timeout: 5000 });

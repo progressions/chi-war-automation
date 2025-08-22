@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { loginAsPlayer, loginAsGamemaster } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function testCurrentCampaignClearing() {
   console.log('🧪 Starting current campaign clearing test...');
   
@@ -23,7 +23,7 @@ async function testCurrentCampaignClearing() {
 
     // Navigate to profile page
     console.log('2. Navigating to profile page...');
-    await page.goto('http://localhost:3001/profile');
+    await page.goto(TEST_CONFIG.getProfileUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('text=Campaigns', { timeout: 15000 });
     console.log('✓ Profile page loaded');
@@ -172,7 +172,7 @@ async function testCurrentCampaignClearing() {
     
     // First, we need to set a campaign as active
     console.log('9. Setting up: Activating a campaign...');
-    await page.goto('http://localhost:3001/campaigns');
+    await page.goto(TEST_CONFIG.getCampaignsUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('[role="grid"]', { timeout: 15000 });
     
@@ -203,7 +203,7 @@ async function testCurrentCampaignClearing() {
 
     // Go back to profile page
     console.log('10. Returning to profile page...');
-    await page.goto('http://localhost:3001/profile');
+    await page.goto(TEST_CONFIG.getProfileUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('text=Campaigns', { timeout: 15000 });
 
@@ -300,7 +300,7 @@ async function testCurrentCampaignClearing() {
 
     // Navigate to profile page
     console.log('14. Navigating to gamemaster profile page...');
-    await page.goto('http://localhost:3001/profile');
+    await page.goto(TEST_CONFIG.getProfileUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('text=Campaigns', { timeout: 15000 });
 
@@ -361,7 +361,7 @@ async function testCurrentCampaignClearing() {
     
     // Switch back to player and verify state
     await loginAsPlayer(page);
-    await page.goto('http://localhost:3001/profile');
+    await page.goto(TEST_CONFIG.getProfileUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('text=Campaigns', { timeout: 15000 });
     

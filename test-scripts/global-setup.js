@@ -1,6 +1,8 @@
 // Global Setup for Chi War Playwright Tests
 // Ensures test environment is properly configured before running tests
 
+const TEST_CONFIG = require('./test-config');
+
 async function globalSetup() {
   console.log('🚀 Chi War Test Suite - Global Setup Starting...');
   
@@ -16,7 +18,7 @@ async function globalSetup() {
   
   while (!railsReady && attempts < maxAttempts) {
     try {
-      const response = await fetch('http://localhost:3000/api/v2/health');
+      const response = await fetch(TEST_CONFIG.getBackendUrl() + '/api/v2/health');
       if (response.status === 404 || response.status === 401) {
         // 404 or 401 means server is responding (even if endpoint doesn't exist)
         railsReady = true;
@@ -39,7 +41,7 @@ async function globalSetup() {
   
   while (!nextReady && attempts < maxAttempts) {
     try {
-      const response = await fetch('http://localhost:3001');
+      const response = await fetch(TEST_CONFIG.getFrontendUrl());
       if (response.status === 200 || response.status === 302) {
         nextReady = true;
         console.log('✅ Next.js server is ready');

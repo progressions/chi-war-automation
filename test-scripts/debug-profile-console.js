@@ -1,7 +1,7 @@
 // Debug Profile Page Console Logs
 const { chromium } = require('playwright');
 const { loginAsPlayer } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function debugProfilePage() {
   console.log('🚀 Starting Profile Page Debug...');
   
@@ -34,7 +34,7 @@ async function debugProfilePage() {
     
     // Navigate to profile
     console.log('👤 Navigating to profile...');
-    await page.goto('http://localhost:3001/profile');
+    await page.goto(TEST_CONFIG.getProfileUrl());
     await page.waitForLoadState('networkidle');
     
     // Wait for profile content

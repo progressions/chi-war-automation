@@ -2,7 +2,7 @@
 // This script helps debug the authentication and redirect issues
 
 const { chromium } = require('playwright');
-
+const TEST_CONFIG = require('./test-config')
 async function debugAuthFlow() {
   console.log('🔍 Starting Authentication Debug...');
   
@@ -13,7 +13,7 @@ async function debugAuthFlow() {
   try {
     // Step 1: Login first
     console.log('📍 Step 1: Logging in...');
-    await page.goto('http://localhost:3001/login');
+    await page.goto(TEST_CONFIG.getLoginUrl());
     await page.waitForLoadState('networkidle');
     
     // Fill login form
@@ -43,7 +43,7 @@ async function debugAuthFlow() {
     
     // Step 3: Try to access a protected page
     console.log('📍 Step 3: Accessing fights page...');
-    await page.goto('http://localhost:3001/fights');
+    await page.goto(TEST_CONFIG.getFightsUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     

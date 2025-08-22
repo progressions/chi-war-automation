@@ -2,7 +2,7 @@
 // This script checks if cookies are being properly stored in the browser
 
 const { chromium } = require('playwright');
-
+const TEST_CONFIG = require('./test-config')
 async function debugCookies() {
   console.log('🍪 Starting Cookie Debug...');
   
@@ -12,12 +12,12 @@ async function debugCookies() {
   
   try {
     console.log('📍 Step 1: Navigate to login page...');
-    await page.goto('http://localhost:3001/login');
+    await page.goto(TEST_CONFIG.getLoginUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForSelector('text=Login to Chi War', { timeout: 10000 });
     
     console.log('📍 Step 2: Check initial cookies...');
-    let cookies = await context.cookies('http://localhost:3001');
+    let cookies = await context.cookies(TEST_CONFIG.getFrontendUrl());
     console.log('Initial cookies:', cookies.map(c => ({name: c.name, value: c.value.substring(0, 20) + '...'})));
     
     console.log('📍 Step 3: Fill and submit login form...');
@@ -32,7 +32,7 @@ async function debugCookies() {
     await page.waitForTimeout(3000);
     
     console.log('📍 Step 4: Check cookies after login...');
-    cookies = await context.cookies('http://localhost:3001');
+    cookies = await context.cookies(TEST_CONFIG.getFrontendUrl());
     console.log('Post-login cookies:', cookies.map(c => ({name: c.name, value: c.value.substring(0, 20) + '...', domain: c.domain, path: c.path})));
     
     const jwtCookie = cookies.find(c => c.name === 'jwtToken');
@@ -76,10 +76,10 @@ async function debugCookies() {
     }
     
     console.log('📍 Step 7: Navigate to another page and check cookies...');
-    await page.goto('http://localhost:3001/');
+    await page.goto(TEST_CONFIG.getFrontendUrl() + '/');
     await page.waitForTimeout(2000);
     
-    cookies = await context.cookies('http://localhost:3001');
+    cookies = await context.cookies(TEST_CONFIG.getFrontendUrl());
     const jwtAfterNav = cookies.find(c => c.name === 'jwtToken');
     
     if (jwtAfterNav) {

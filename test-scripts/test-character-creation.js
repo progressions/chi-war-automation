@@ -2,7 +2,7 @@
 // This script automates the complete character creation and management flow
 
 const { chromium } = require('playwright');
-
+const TEST_CONFIG = require('./test-config')
 async function runCharacterCreationTest() {
   console.log('🚀 Starting Character Creation Test...');
   
@@ -14,7 +14,7 @@ async function runCharacterCreationTest() {
   try {
     // Step 1: Navigate to application and login
     console.log('📍 Step 1: Navigating to application...');
-    await page.goto('http://localhost:3001');
+    await page.goto(TEST_CONFIG.getFrontendUrl());
     
     // Take a screenshot to see what we're dealing with
     await page.screenshot({ path: 'test-results/character-login-page.png', fullPage: true });
@@ -57,7 +57,7 @@ async function runCharacterCreationTest() {
     } else {
       // Try alternative navigation
       console.log('🔄 Trying alternative navigation to characters...');
-      await page.goto('http://localhost:3001/characters');
+      await page.goto(TEST_CONFIG.getCharactersUrl());
     }
     
     await page.waitForURL(/.*\/characters.*/, { timeout: 10000 });
@@ -272,7 +272,7 @@ async function runCharacterCreationTest() {
     const currentUrl = page.url();
     if (!currentUrl.includes('/characters') || currentUrl.includes('/characters/')) {
       console.log('🔄 Navigating back to characters list...');
-      await page.goto('http://localhost:3001/characters');
+      await page.goto(TEST_CONFIG.getCharactersUrl());
       await page.waitForLoadState('networkidle');
     }
     

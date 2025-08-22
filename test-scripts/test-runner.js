@@ -6,7 +6,7 @@
 const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-
+const TEST_CONFIG = require('./test-config')
 class TestRunner {
   constructor() {
     this.rootDir = path.dirname(__dirname);
@@ -267,19 +267,19 @@ class TestRunner {
     console.log('🚦 Ensuring test servers are running...');
     
     // Check if servers are already running
-    const backendRunning = await this.checkServerRunning('http://localhost:3000/api/v2/users/current');
-    const frontendRunning = await this.checkServerRunning('http://localhost:3001');
+    const backendRunning = await this.checkServerRunning('TEST_CONFIG.getBackendUrl()/api/v2/users/current');
+    const frontendRunning = await this.checkServerRunning(TEST_CONFIG.getFrontendUrl());
     
     if (!backendRunning) {
       console.log('🔄 Starting backend server...');
       await this.startBackendServer();
-      await this.waitForServer('http://localhost:3000/api/v2/users/current');
+      await this.waitForServer('TEST_CONFIG.getBackendUrl()/api/v2/users/current');
     }
     
     if (!frontendRunning) {
       console.log('🔄 Starting frontend server...');
       await this.startFrontendServer();
-      await this.waitForServer('http://localhost:3001');
+      await this.waitForServer(TEST_CONFIG.getFrontendUrl());
     }
     
     console.log('✅ Servers are running');

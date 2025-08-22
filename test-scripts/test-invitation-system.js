@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { loginAsGamemaster } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function testInvitationSystem() {
   console.log('Starting invitation system test...');
   
@@ -22,7 +22,7 @@ async function testInvitationSystem() {
 
     // Navigate to campaigns page to access campaign details
     console.log('2. Navigating to campaigns page...');
-    await page.goto('http://localhost:3001/campaigns');
+    await page.goto(TEST_CONFIG.getCampaignsUrl());
     
     // Wait for campaigns table to load
     await page.waitForSelector('[role="grid"]', { timeout: 15000 });

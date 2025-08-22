@@ -3,7 +3,7 @@
 
 const { chromium } = require('playwright');
 const { loginAsGamemaster, loginAsPlayer } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 // Network validation configuration
 const EXPECTED_API_PATTERNS = {
   campaign_membership_delete: {
@@ -229,7 +229,7 @@ async function navigateToProfilePage(page) {
     console.log('🔍 Navigating directly to profile page...');
     
     // Navigate directly to profile page
-    await page.goto('http://localhost:3001/profile');
+    await page.goto(TEST_CONFIG.getProfileUrl());
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     
@@ -541,7 +541,7 @@ async function testApiErrorScenarios(page, networkValidator) {
       if (req.url.includes('/api/v2/campaign_memberships')) {
         // Check for malformed URLs or missing required parameters
         if (req.method === 'DELETE') {
-          const url = new URL(req.url, 'http://localhost:3000');
+          const url = new URL(req.url, TEST_CONFIG.getBackendUrl());
           const campaignId = url.searchParams.get('campaign_id');
           const userId = url.searchParams.get('user_id');
           

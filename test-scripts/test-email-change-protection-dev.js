@@ -1,5 +1,6 @@
 const { chromium } = require('playwright')
 const { loginAsPlayer, loginAsGamemaster } = require('./login-helper')
+const TEST_CONFIG = require('./test-config')
 
 async function testEmailChangeProtection() {
   const browser = await chromium.launch({ headless: false })
@@ -14,12 +15,11 @@ async function testEmailChangeProtection() {
     await loginAsPlayer(page, { 
       takeScreenshot: true, 
       screenshotPath: 'test-results/email-protection-01-login.png',
-      port: 3001
     })
     
     // Step 2: Navigate to profile page
     console.log('📝 Step 2: Navigating to profile page...')
-    await page.goto('http://localhost:3001/profile')
+    await page.goto('TEST_CONFIG.getProfileUrl()')
     await page.waitForLoadState('networkidle')
     await page.screenshot({ path: 'test-results/email-protection-02-profile-page.png' })
     
@@ -172,7 +172,7 @@ async function testAccessibility() {
     
     // Login and navigate to profile
     await loginAsPlayer(page, { takeScreenshot: false, port: 3001 })
-    await page.goto('http://localhost:3001/profile')
+    await page.goto('TEST_CONFIG.getProfileUrl()')
     await page.waitForLoadState('networkidle')
     
     // Trigger email change dialog

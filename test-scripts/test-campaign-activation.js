@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { loginAsPlayer } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function testCampaignActivation() {
   console.log('Starting campaign activation test...');
   
@@ -22,7 +22,7 @@ async function testCampaignActivation() {
 
     // Navigate to campaigns page
     console.log('2. Navigating to campaigns page...');
-    await page.goto('http://localhost:3001/campaigns');
+    await page.goto(TEST_CONFIG.getCampaignsUrl());
     
     // Wait for campaigns table to load
     await page.waitForSelector('[role="grid"]', { timeout: 15000 });

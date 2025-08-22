@@ -1,6 +1,6 @@
 const { chromium } = require('playwright')
 const { loginAsGamemaster } = require('./login-helper')
-
+const TEST_CONFIG = require('./test-config')
 async function testFixManualVerification() {
   console.log('🔧 Manual Fix Verification - Interactive Test')
   
@@ -19,7 +19,7 @@ async function testFixManualVerification() {
     await loginAsGamemaster(page)
 
     // Navigate to characters
-    await page.goto('http://localhost:3001/characters')
+    await page.goto(TEST_CONFIG.getCharactersUrl())
     await page.waitForSelector('.MuiDataGrid-root', { timeout: 10000 })
 
     console.log('🎯 Ready for manual testing!')

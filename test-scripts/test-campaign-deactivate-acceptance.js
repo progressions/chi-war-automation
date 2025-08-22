@@ -10,7 +10,7 @@ const { loginAsGamemaster } = require('./login-helper');
   // Step 1: Start both servers
   console.log('📡 Starting Rails server in test environment...');
   const { spawn } = require('child_process');
-  
+const TEST_CONFIG = require('./test-config')  
   const railsServer = spawn('bash', ['-c', 'source ~/.rvm/scripts/rvm && rvm use 3.2.2 && RAILS_ENV=test rails server -p 3000'], {
     cwd: path.join(__dirname, '../shot-server'),
     stdio: 'pipe'
@@ -162,7 +162,7 @@ const { loginAsGamemaster } = require('./login-helper');
     console.log('🚫 Step 6: Testing direct navigation protection');
     
     // Try to navigate directly to /fights
-    await page.goto('http://localhost:3001/fights');
+    await page.goto(TEST_CONFIG.getFightsUrl());
     await page.waitForTimeout(2000);
     
     // Take screenshot of redirect result

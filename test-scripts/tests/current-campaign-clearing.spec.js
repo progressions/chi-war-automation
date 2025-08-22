@@ -3,6 +3,7 @@
 
 const { test, expect } = require('@playwright/test');
 const { loginAsGamemaster, loginAsPlayer } = require('../login-helper');
+const TEST_CONFIG = require('../test-config');
 
 test.describe('Current Campaign Clearing Functionality', () => {
   
@@ -257,7 +258,7 @@ async function navigateToProfilePage(page) {
   console.log('🔍 Navigating directly to profile page...');
   
   // Navigate directly to profile page (no menu navigation needed)
-  await page.goto('http://localhost:3001/profile');
+  await page.goto(TEST_CONFIG.getProfileUrl());
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(2000);
   

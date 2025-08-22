@@ -1,6 +1,8 @@
 // Shared login helper for Playwright tests
 // Provides reusable login functionality for Chi War test automation
 
+const TEST_CONFIG = require('./test-config');
+
 /**
  * Performs login to Chi War application
  * @param {Page} page - Playwright page object
@@ -11,13 +13,13 @@
  * @param {string} options.screenshotPath - Base path for screenshots
  */
 async function loginToChiWar(page, email, password, options = {}) {
-  const { takeScreenshot = false, screenshotPath = 'test-results', port = 3001 } = options;
+  const { takeScreenshot = false, screenshotPath = 'test-results' } = options;
   
   try {
     console.log(`🔐 Logging in as: ${email}`);
     
-    // Navigate to application (use specified port, default 3001)
-    await page.goto(`http://localhost:${port}`);
+    // Navigate to application (use test configuration)
+    await page.goto(TEST_CONFIG.getFrontendUrl());
     
     // Wait for page to load and check for login form
     await page.waitForLoadState('networkidle');

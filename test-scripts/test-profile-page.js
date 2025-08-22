@@ -3,7 +3,7 @@
 
 const { chromium } = require('playwright');
 const { loginAsPlayer } = require('./login-helper');
-
+const TEST_CONFIG = require('./test-config')
 async function runProfilePageTest() {
   console.log('🚀 Starting Profile Page Test...');
   
@@ -29,7 +29,7 @@ async function runProfilePageTest() {
     console.log('Current URL after login:', homepageUrl);
     
     // Check if we're on the homepage
-    if (!homepageUrl.includes('localhost:3001') || homepageUrl.includes('/login')) {
+    if (!homepageUrl.includes(TEST_CONFIG.getFrontendUrl()) || homepageUrl.includes('/login')) {
       throw new Error('Homepage did not load correctly after login');
     }
     
