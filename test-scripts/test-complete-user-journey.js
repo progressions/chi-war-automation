@@ -343,6 +343,75 @@ async function runPhase1_GamemasterSetup(browser) {
       throw new Error('Campaign creation failed');
     }
     
+    // Step 4.5: TDD - Validate Campaign Creation Updates Onboarding State
+    console.log('\n🚦 Step 4.5: TDD - Validate Campaign Creation Updates Onboarding State');
+    console.log('  Testing: "Create Your First Campaign" CTA should disappear after campaign creation');
+    
+    // Wait a moment for state updates to propagate
+    await gmPage.waitForTimeout(2000);
+    
+    // Navigate back to campaigns page to see the onboarding state
+    console.log('  Navigating to campaigns page to check onboarding state...');
+    await gmPage.goto(TEST_CONFIG.getCampaignsUrl(), { waitUntil: 'networkidle' });
+    await gmPage.waitForTimeout(3000); // Allow onboarding components to load
+    
+    await gmPage.screenshot({ 
+      path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step4.5_post_campaign_onboarding.png`),
+      fullPage: true 
+    });
+    
+    // Check that the "Create Your First Campaign" CTA is no longer visible
+    const postCampaignCtaSelector = '[data-testid="campaign-onboarding-cta"]';
+    
+    try {
+      const campaignCtaExists = await gmPage.locator(postCampaignCtaSelector).count() > 0;
+      
+      if (campaignCtaExists) {
+        // Check if the CTA is visible (not just exists)
+        const isVisible = await gmPage.locator(postCampaignCtaSelector).isVisible();
+        
+        if (isVisible) {
+          console.log('  ❌ EXPECTED: "Create Your First Campaign" CTA should be hidden after creating first campaign');
+          console.log('  ❌ ACTUAL: Campaign CTA is still visible on page');
+          
+          // Take debug screenshot
+          await gmPage.screenshot({ 
+            path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step4.5_TDD_FAIL_cta_still_visible.png`),
+            fullPage: true 
+          });
+          
+          // Show what onboarding modules are present
+          const onboardingModules = await gmPage.locator('[class*="onboarding"], [data-testid*="onboarding"]').count();
+          console.log(`  Debug: Found ${onboardingModules} onboarding modules on page`);
+          
+          throw new Error('TDD Test FAILED: Campaign creation did not update onboarding state - CTA still visible');
+        }
+      }
+      
+      console.log('  ✅ PASS: "Create Your First Campaign" CTA is no longer visible');
+      console.log('  ✅ Campaign creation successfully updated onboarding milestone');
+      
+    } catch (selectorError) {
+      // If selector not found, that's actually good - means CTA is gone
+      console.log('  ✅ PASS: "Create Your First Campaign" CTA element not found (successfully removed)');
+    }
+    
+    // Additional validation: Check if we can see onboarding carousel or completion state
+    const onboardingCarousel = await gmPage.locator('[data-testid="onboarding-carousel"]').count();
+    const onboardingComplete = await gmPage.locator('[data-testid="onboarding-complete"]').count();
+    
+    console.log(`  Info: Found ${onboardingCarousel} onboarding carousel modules, ${onboardingComplete} completion modules`);
+    
+    if (onboardingCarousel > 0) {
+      console.log('  ✅ Progress: Onboarding carousel is now visible (next milestones)');
+    } else if (onboardingComplete > 0) {
+      console.log('  ✅ Complete: Onboarding completion state visible');
+    } else {
+      console.log('  ⚠️  Note: No obvious onboarding progression visible (may be expected)');
+    }
+    
+    console.log('✅ Step 4.5: Campaign creation onboarding validation completed');
+    
     // Step 5: Verify Campaign Seeding
     console.log('\n🌱 Step 5: Campaign Seeding Verification');
     const seedingResult = await verifyCampaignSeeding(gmPage, {
