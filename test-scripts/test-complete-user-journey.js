@@ -236,6 +236,51 @@ async function runPhase1_GamemasterSetup(browser) {
       throw new Error('Gamemaster login failed');
     }
     
+    // Step 3.5: TDD - Validate Onboarding State (Red Phase)
+    console.log('\n🚦 Step 3.5: TDD - Validate New User Onboarding State');
+    
+    // (a) Verify user is on homepage root path, not /campaigns
+    console.log('  Testing: User lands on homepage (/) not campaigns page');
+    const currentUrl = gmPage.url();
+    const urlPath = new URL(currentUrl).pathname;
+    
+    console.log(`  Current URL: ${currentUrl}`);
+    console.log(`  Current path: ${urlPath}`);
+    
+    if (urlPath !== '/') {
+      console.log(`  ❌ EXPECTED: User should land on root path (/)`);
+      console.log(`  ❌ ACTUAL: User landed on path (${urlPath})`);
+      throw new Error(`TDD Red Phase: User should land on root path (/) but landed on (${urlPath})`);
+    }
+    console.log('  ✅ PASS: User correctly landed on homepage root path (/)');
+    
+    // (b) Verify "Create your first campaign" CTA is visible
+    console.log('  Testing: "Create your first campaign" onboarding CTA is visible');
+    
+    await gmPage.screenshot({ 
+      path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.5_onboarding_state.png`),
+      fullPage: true 
+    });
+    
+    // Look for the onboarding campaign CTA (this should fail in red phase)
+    const campaignCtaSelector = '[data-testid="campaign-onboarding-cta"], button:has-text("Create Your First Campaign"), [data-testid="create-first-campaign"]';
+    
+    try {
+      await gmPage.waitForSelector(campaignCtaSelector, { timeout: 3000 });
+      console.log('  ✅ PASS: Campaign creation CTA found');
+    } catch (error) {
+      console.log('  ❌ EXPECTED: "Create your first campaign" CTA should be visible');
+      console.log('  ❌ ACTUAL: Campaign CTA not found on page');
+      
+      // Log what onboarding elements are actually present
+      const onboardingElements = await gmPage.locator('[data-testid*="onboarding"], [class*="onboarding"], button:has-text("campaign"):has-text("create")').count();
+      console.log(`  Debug: Found ${onboardingElements} potential onboarding elements`);
+      
+      throw new Error('TDD Red Phase: Campaign creation CTA not found - onboarding system not working as expected');
+    }
+    
+    console.log('✅ Step 3.5: Onboarding validation completed');
+    
     // Step 4: Campaign Creation
     console.log('\n📋 Step 4: Campaign Creation');
     const campaignResult = await createCampaign(gmPage, CAMPAIGN_DATA, {
