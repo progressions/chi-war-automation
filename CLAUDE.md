@@ -346,17 +346,33 @@ await loginAsGamemaster(page, { takeScreenshot: true, screenshotPath: 'test-resu
 ```bash
 cd test-scripts
 
-# Run individual test scripts
+# Complete End-to-End User Journey Test (PRIMARY TEST)
+# Tests full user story from new visitor to running RPG session
+# Validates: registration, onboarding, campaign creation, character creation, 
+# world-building, player invitations, party formation, fight setup
+node test-complete-user-journey.js
+
+# Individual feature test scripts
 node test-current-campaign-clearing-e2e.js
 node test-campaign-activation.js
 node test-profile-page.js
 
-# Run UI validation tests (no backend integration required)
+# UI validation tests (no backend integration required)
 node test-current-campaign-clearing-ui-validated.js
 
 # Run with Playwright test runner
 npx playwright test tests/current-campaign-clearing.spec.js
 ```
+
+**Complete User Journey Test:**
+The `test-complete-user-journey.js` script provides comprehensive validation of the entire user experience:
+- **Phase 1**: Gamemaster registration & setup (campaign, world-building)
+- **Phase 2**: Player invitation & registration (4 players)  
+- **Phase 3**: Character creation (4 players + GM NPCs)
+- **Phase 4**: Session organization (party formation, fight setup)
+- **Phase 5**: Gameplay validation (fight initiation, combat mechanics)
+
+This test validates the complete "happy path" including the new user onboarding system and ensures all core functionality integrates properly.
 
 **Test Structure:**
 - `test-scripts/` - Individual Node.js test scripts using Playwright
