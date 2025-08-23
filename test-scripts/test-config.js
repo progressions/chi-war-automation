@@ -46,6 +46,18 @@ const TEST_CONFIG = {
   // API endpoints
   getApiUrl(endpoint) {
     return `${this.getBackendUrl()}/api/v2/${endpoint}`;
+  },
+  
+  // Seeded test users (from Rails seed data)
+  SEEDED_USERS: {
+    gamemaster: {
+      email: 'progressions@gmail.com',
+      password: 'TestPass123!'
+    },
+    player: {
+      email: 'player@example.com', 
+      password: 'TestPass123!'
+    }
   }
 };
 
