@@ -314,7 +314,8 @@ async function runGamemasterOnboardingValidation(browser) {
       }
       
       // Wait for form submission to complete and possible redirect
-      await gmPage.waitForTimeout(5000);
+      // Also wait for custom event to trigger and page to reload with new campaign
+      await gmPage.waitForTimeout(8000);
       
       // Check if we need to navigate back to campaigns page
       const currentUrl = gmPage.url();
