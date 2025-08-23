@@ -808,7 +808,86 @@ async function runGamemasterOnboardingValidation(browser) {
       throw new Error(`Character creation CTA validation failed - ${error.message}`);
     }
     
-    // TEST COMPLETE - Stop after character creation CTA validation
+    // Step 3.12: Click "Go to Characters" button and navigate to /characters
+    console.log('\n🚦 Step 3.12: Click "Go to Characters" Button and Navigate to Characters Page');
+    console.log('  Testing: Click "Go to Characters" button and verify navigation to /characters page');
+    
+    try {
+      // Look for the "Go to Characters" button
+      const goToCharactersSelectors = [
+        'button:has-text("Go to Characters")',
+        'a:has-text("Go to Characters")',
+        '[data-testid="go-to-characters"]',
+        '[data-testid*="characters"]:has-text("Go")',
+        'button:has-text("Characters")',
+        'a:has-text("Characters")'
+      ];
+      
+      let goToCharactersButton = null;
+      let usedSelector = '';
+      
+      for (const selector of goToCharactersSelectors) {
+        try {
+          goToCharactersButton = await gmPage.waitForSelector(selector, { timeout: 3000 });
+          usedSelector = selector;
+          console.log(`  ✅ "Go to Characters" button found using selector: ${selector}`);
+          break;
+        } catch (e) {
+          // Continue trying other selectors
+        }
+      }
+      
+      if (!goToCharactersButton) {
+        throw new Error('Go to Characters button not found on page');
+      }
+      
+      // Take screenshot before clicking
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.12_before_characters_click.png`),
+        fullPage: true 
+      });
+      
+      // Click the "Go to Characters" button
+      console.log('  Clicking "Go to Characters" button...');
+      await goToCharactersButton.click();
+      
+      // Wait for navigation to complete
+      await gmPage.waitForTimeout(3000);
+      
+      // Verify we're on the /characters page
+      const currentUrl = gmPage.url();
+      const urlPath = new URL(currentUrl).pathname;
+      
+      console.log(`  Current URL after click: ${currentUrl}`);
+      console.log(`  Current path: ${urlPath}`);
+      
+      if (!urlPath.includes('/characters')) {
+        throw new Error(`Expected to be on /characters page but current path is: ${urlPath}`);
+      }
+      
+      console.log(`  ✅ PASS: Successfully navigated to /characters page`);
+      
+      // Take screenshot of characters page
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.12_characters_page.png`),
+        fullPage: true 
+      });
+      
+      console.log('✅ Step 3.12: Go to Characters navigation completed successfully');
+      
+    } catch (error) {
+      console.log('  ❌ EXPECTED: "Go to Characters" button should be clickable and navigate to /characters');
+      console.log(`  ❌ ACTUAL: ${error.message}`);
+      
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.12_characters_navigation_failed.png`),
+        fullPage: true 
+      });
+      
+      throw new Error(`Characters navigation failed - ${error.message}`);
+    }
+    
+    // TEST COMPLETE - Stop after characters navigation validation
     console.log('\n🎉 ===== TEST COMPLETED SUCCESSFULLY =====');
     console.log('✅ SUCCESS: New user sees "Create Your First Campaign" onboarding milestone');
     console.log('✅ SUCCESS: Campaign creation form opens correctly when CTA is clicked');
@@ -817,6 +896,7 @@ async function runGamemasterOnboardingValidation(browser) {
     console.log('✅ SUCCESS: Onboarding CTA changes to campaign activation after campaign creation');
     console.log('✅ SUCCESS: Campaign can be activated and status changes to "Active"');
     console.log('✅ SUCCESS: Onboarding CTA changes to "Create your first character" after campaign activation');
+    console.log('✅ SUCCESS: "Go to Characters" button navigates to /characters page');
     console.log('🎯 Test completed after full progressive onboarding workflow validation');
     
     return {
@@ -829,6 +909,7 @@ async function runGamemasterOnboardingValidation(browser) {
       campaignActivationValidated: true,
       campaignActivated: true,
       characterCtaValidated: true,
+      charactersNavigationValidated: true,
       campaignName: campaignName
     };
     
@@ -874,6 +955,7 @@ async function runOnboardingMilestoneValidation() {
     console.log(`📊 Activation CTA Change: ${result.campaignActivationValidated ? 'PASSED' : 'FAILED'}`);
     console.log(`📊 Campaign Activation: ${result.campaignActivated ? 'PASSED' : 'FAILED'}`);
     console.log(`📊 Character CTA Change: ${result.characterCtaValidated ? 'PASSED' : 'FAILED'}`);
+    console.log(`📊 Characters Navigation: ${result.charactersNavigationValidated ? 'PASSED' : 'FAILED'}`);
     
     console.log(`\n🎯 OVERALL RESULT: ${result.success ? '✅ SUCCESS' : '❌ FAILED'}`);
     console.log(`📸 Screenshots saved to: ${SCREENSHOTS_DIR}`);
@@ -891,6 +973,7 @@ async function runOnboardingMilestoneValidation() {
       console.log('✅ Onboarding CTA changes to "Activate your campaign" after creation');
       console.log('✅ Campaign can be activated and status changes to "Active"');
       console.log('✅ Onboarding CTA changes to "Create your first character" after activation');
+      console.log('✅ "Go to Characters" button navigates to /characters page');
     } else {
       console.log('\n⚠️ Test failed. Check logs and screenshots for details.');
     }
