@@ -13,8 +13,8 @@ const { chromium } = require('playwright');
 const path = require('path');
 
 // Test configuration
-const BASE_URL = 'http://localhost:3005'; // Next.js test server
-const API_URL = 'http://localhost:3004';   // Rails test server
+const BASE_URL = process.env.TEST_FRONTEND_PORT ? `http://localhost:${process.env.TEST_FRONTEND_PORT}` : 'http://localhost:3005'; // Next.js test server
+const API_URL = process.env.TEST_BACKEND_PORT ? `http://localhost:${process.env.TEST_BACKEND_PORT}` : 'http://localhost:3004';   // Rails test server
 const SCREENSHOTS_DIR = path.join(__dirname, 'test-results', 'gm-onboarding-journey');
 const TEST_EMAIL = `test-gm-${Date.now()}@example.com`;
 const TEST_PASSWORD = 'TestPassword123!';
