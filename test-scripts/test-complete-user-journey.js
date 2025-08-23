@@ -1,13 +1,15 @@
 /**
- * Onboarding Milestone & Campaign Form Validation Test
+ * Complete Campaign Creation Onboarding Test
  * 
- * Tests the new user onboarding milestone system:
+ * Tests the complete new user onboarding and campaign creation workflow:
  * - User registration and email confirmation
  * - User login and redirect to campaigns page
  * - Validation that "Create Your First Campaign" CTA appears
  * - Click the CTA and validate campaign creation form opens
+ * - Fill out campaign form with name and description
+ * - Save the campaign and validate it appears in campaigns table
  * 
- * Test validates the complete onboarding flow through to campaign form access.
+ * Test validates the complete onboarding flow through successful campaign creation.
  */
 
 const { chromium } = require('playwright');
@@ -22,7 +24,7 @@ const {
   confirmUserEmail 
 } = require('./helpers/user-registration-helper');
 
-// Test configuration
+// Import test configuration
 const TEST_CONFIG = require('./test-config');
 const SCREENSHOTS_DIR = path.join(__dirname, 'test-results', 'onboarding-milestone-validation');
 const TIMESTAMP = new Date().toISOString().replace(/[:.]/g, '-');
@@ -50,10 +52,10 @@ async function ensureScreenshotDir() {
 }
 
 /**
- * Gamemaster Registration, Onboarding Milestone & Campaign Form Validation
+ * Complete Gamemaster Registration and Campaign Creation Flow
  */
 async function runGamemasterOnboardingValidation(browser) {
-  console.log('\n🎮 ===== GAMEMASTER REGISTRATION, ONBOARDING MILESTONE & CAMPAIGN FORM VALIDATION =====');
+  console.log('\n🎮 ===== COMPLETE GAMEMASTER REGISTRATION AND CAMPAIGN CREATION FLOW =====');
   
   const context = await browser.newContext({
     viewport: { width: 1280, height: 1024 }
@@ -232,18 +234,198 @@ async function runGamemasterOnboardingValidation(browser) {
       throw new Error(`TDD Test: Campaign creation form validation failed - ${error.message}`);
     }
     
-    // TEST COMPLETE - Stop after campaign form validation
+    // Step 3.7: Fill out and save campaign form
+    console.log('\n🚦 Step 3.7: Fill Out Campaign Form and Save');
+    console.log('  Testing: Campaign form can be filled and saved');
+    
+    const campaignName = 'My First Epic Campaign';
+    const campaignDescription = 'An amazing adventure through time and space where heroes battle ancient evils.';
+    
+    try {
+      // Fill out campaign name
+      console.log('  Filling campaign name field...');
+      const nameInput = await gmPage.waitForSelector('input[name="name"], input[placeholder*="name" i]', { timeout: 5000 });
+      await nameInput.fill(campaignName);
+      console.log(`  ✅ Campaign name filled: "${campaignName}"`);
+      
+      // Fill out campaign description (try multiple selectors)
+      console.log('  Filling campaign description field...');
+      const descriptionSelectors = [
+        'textarea[name="description"]',
+        'textarea[placeholder*="description" i]',
+        'input[name="description"]',
+        'textarea'
+      ];
+      
+      let descriptionInput = null;
+      for (const selector of descriptionSelectors) {
+        try {
+          descriptionInput = await gmPage.waitForSelector(selector, { timeout: 2000 });
+          console.log(`  ✅ Description field found using selector: ${selector}`);
+          break;
+        } catch (e) {
+          // Continue trying other selectors
+        }
+      }
+      
+      if (descriptionInput) {
+        await descriptionInput.fill(campaignDescription);
+        console.log(`  ✅ Campaign description filled`);
+      } else {
+        console.log('  ⚠️  Description field not found, continuing without it');
+      }
+      
+      // Take screenshot of filled form
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.7_form_filled.png`),
+        fullPage: true 
+      });
+      
+      // Submit the form (try multiple submit selectors)
+      console.log('  Submitting campaign form...');
+      const submitSelectors = [
+        'button[type="submit"]',
+        'button:has-text("Save")',
+        'button:has-text("Create")',
+        'button:has-text("Submit")',
+        'input[type="submit"]',
+        '.submit-button',
+        '[data-testid="submit-button"]'
+      ];
+      
+      let submitted = false;
+      for (const selector of submitSelectors) {
+        try {
+          const submitButton = await gmPage.waitForSelector(selector, { timeout: 2000 });
+          await submitButton.click();
+          console.log(`  ✅ Form submitted using selector: ${selector}`);
+          submitted = true;
+          break;
+        } catch (e) {
+          // Continue trying other selectors
+        }
+      }
+      
+      if (!submitted) {
+        // Try pressing Enter on the form
+        await nameInput.press('Enter');
+        console.log('  ✅ Form submitted using Enter key');
+      }
+      
+      // Wait for form submission to complete and possible redirect
+      await gmPage.waitForTimeout(5000);
+      
+      // Check if we need to navigate back to campaigns page
+      const currentUrl = gmPage.url();
+      console.log(`  Current URL after form submit: ${currentUrl}`);
+      
+      if (!currentUrl.includes('/campaigns')) {
+        console.log('  Navigating back to campaigns page...');
+        await gmPage.goto(TEST_CONFIG.getCampaignsUrl(), { waitUntil: 'networkidle' });
+        await gmPage.waitForTimeout(3000);
+      }
+      
+      console.log('✅ Step 3.7: Campaign form filling and saving completed');
+      
+    } catch (error) {
+      console.log('  ❌ EXPECTED: Campaign form should be fillable and saveable');
+      console.log(`  ❌ ACTUAL: ${error.message}`);
+      
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.7_failed.png`),
+        fullPage: true 
+      });
+      
+      throw new Error(`Campaign form filling failed - ${error.message}`);
+    }
+    
+    // Step 3.8: Validate campaign appears in campaigns table
+    console.log('\n🚦 Step 3.8: Validate Campaign Appears in Campaigns Table');
+    console.log('  Testing: Created campaign is visible in campaigns list');
+    
+    try {
+      // Take screenshot after form submission
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.8_after_save.png`),
+        fullPage: true 
+      });
+      
+      // Look for the campaign in the table/list
+      console.log(`  Searching for campaign "${campaignName}" in campaigns table...`);
+      
+      // Try different ways to find the campaign
+      const campaignFoundSelectors = [
+        `text="${campaignName}"`,
+        `[data-testid*="campaign"]:has-text("${campaignName}")`,
+        `tr:has-text("${campaignName}")`,
+        `td:has-text("${campaignName}")`,
+        `.campaign-name:has-text("${campaignName}")`,
+        `.campaign-row:has-text("${campaignName}")`
+      ];
+      
+      let campaignFound = false;
+      for (const selector of campaignFoundSelectors) {
+        try {
+          await gmPage.waitForSelector(selector, { timeout: 3000 });
+          console.log(`  ✅ Campaign found in table using selector: ${selector}`);
+          campaignFound = true;
+          break;
+        } catch (e) {
+          // Continue trying other selectors
+        }
+      }
+      
+      if (!campaignFound) {
+        // Check if campaign name appears anywhere on the page
+        const pageContent = await gmPage.textContent('body');
+        if (pageContent.includes(campaignName)) {
+          console.log(`  ✅ Campaign "${campaignName}" found on page (not in table format)`);
+          campaignFound = true;
+        }
+      }
+      
+      if (!campaignFound) {
+        // Debug: Check what campaigns are actually shown
+        const allText = await gmPage.textContent('body');
+        console.log('  Debug: Checking page content...');
+        if (allText.toLowerCase().includes('campaign')) {
+          console.log('  Debug: Found "campaign" text on page');
+        }
+        
+        throw new Error(`Campaign "${campaignName}" not found on page after creation`);
+      }
+      
+      console.log(`  ✅ PASS: Campaign "${campaignName}" is visible on campaigns page`);
+      console.log('✅ Step 3.8: Campaign table validation completed successfully');
+      
+    } catch (error) {
+      console.log('  ❌ EXPECTED: Created campaign should appear in campaigns table');
+      console.log(`  ❌ ACTUAL: ${error.message}`);
+      
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.8_failed.png`),
+        fullPage: true 
+      });
+      
+      throw new Error(`Campaign table validation failed - ${error.message}`);
+    }
+    
+    // TEST COMPLETE - Stop after campaign creation and validation
     console.log('\n🎉 ===== TEST COMPLETED SUCCESSFULLY =====');
     console.log('✅ SUCCESS: New user sees "Create Your First Campaign" onboarding milestone');
     console.log('✅ SUCCESS: Campaign creation form opens correctly when CTA is clicked');
-    console.log('🎯 Test completed after campaign form validation');
+    console.log('✅ SUCCESS: Campaign form can be filled out and saved');
+    console.log('✅ SUCCESS: Created campaign appears in campaigns table');
+    console.log('🎯 Test completed after full campaign creation workflow');
     
     return {
       success: true,
       gmPage: gmPage,
       email: GM_DATA.email,
       onboardingValidated: true,
-      campaignFormValidated: true
+      campaignFormValidated: true,
+      campaignCreated: true,
+      campaignName: campaignName
     };
     
   } catch (error) {
@@ -261,10 +443,10 @@ async function runGamemasterOnboardingValidation(browser) {
 
 
 /**
- * Main test execution - Onboarding Milestone & Campaign Form Validation
+ * Main test execution - Complete Campaign Creation Onboarding Test
  */
 async function runOnboardingMilestoneValidation() {
-  console.log('🚀 Starting Onboarding Milestone & Campaign Form Validation Test');
+  console.log('🚀 Starting Complete Campaign Creation Onboarding Test');
   console.log(`📧 GM Email: ${GM_EMAIL}`);
   console.log(`📸 Screenshots: ${SCREENSHOTS_DIR}`);
   
@@ -280,19 +462,25 @@ async function runOnboardingMilestoneValidation() {
     const result = await runGamemasterOnboardingValidation(browser);
     
     // Test Summary
-    console.log('\n🎉 ===== ONBOARDING MILESTONE & CAMPAIGN FORM TEST RESULTS =====');
+    console.log('\n🎉 ===== COMPLETE CAMPAIGN CREATION ONBOARDING TEST RESULTS =====');
     console.log(`📊 Registration & Login: ${result.success ? 'PASSED' : 'FAILED'}`);
     console.log(`📊 Onboarding Milestone: ${result.onboardingValidated ? 'PASSED' : 'FAILED'}`);
     console.log(`📊 Campaign Form Opening: ${result.campaignFormValidated ? 'PASSED' : 'FAILED'}`);
+    console.log(`📊 Campaign Creation: ${result.campaignCreated ? 'PASSED' : 'FAILED'}`);
     
     console.log(`\n🎯 OVERALL RESULT: ${result.success ? '✅ SUCCESS' : '❌ FAILED'}`);
     console.log(`📸 Screenshots saved to: ${SCREENSHOTS_DIR}`);
     console.log(`📧 Test account created: ${GM_EMAIL}`);
+    if (result.campaignName) {
+      console.log(`📋 Campaign created: "${result.campaignName}"`);
+    }
     
     if (result.success) {
-      console.log('\n🎊 Complete onboarding flow validation PASSED!');
+      console.log('\n🎊 Complete campaign creation workflow PASSED!');
       console.log('✅ "Create Your First Campaign" CTA displays correctly');
       console.log('✅ Campaign creation form opens when CTA is clicked');
+      console.log('✅ Campaign form can be filled out and saved');
+      console.log('✅ Created campaign appears in campaigns table');
     } else {
       console.log('\n⚠️ Test failed. Check logs and screenshots for details.');
     }
