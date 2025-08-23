@@ -121,96 +121,12 @@ async function registerNewUser(page, userData, options = {}) {
     // Fill out registration form
     console.log('📝 Filling registration form...');
     
-    // Fill email field
-    const emailSelectors = [
-      'input[name="email"]',
-      'input[type="email"]',
-      '#email',
-      'input[placeholder*="email" i]'
-    ];
-    
-    for (const selector of emailSelectors) {
-      const field = page.locator(selector).first();
-      if (await field.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await field.clear();
-        await field.fill(userData.email);
-        break;
-      }
-    }
-    
-    // Fill first name
-    const firstNameSelectors = [
-      'input[name="first_name"]',
-      'input[name="firstName"]',
-      'input[name="fname"]',
-      '#first_name',
-      '#firstName',
-      'input[placeholder*="first name" i]'
-    ];
-    
-    for (const selector of firstNameSelectors) {
-      const field = page.locator(selector).first();
-      if (await field.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await field.clear();
-        await field.fill(userData.firstName);
-        break;
-      }
-    }
-    
-    // Fill last name
-    const lastNameSelectors = [
-      'input[name="last_name"]',
-      'input[name="lastName"]', 
-      'input[name="lname"]',
-      '#last_name',
-      '#lastName',
-      'input[placeholder*="last name" i]'
-    ];
-    
-    for (const selector of lastNameSelectors) {
-      const field = page.locator(selector).first();
-      if (await field.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await field.clear();
-        await field.fill(userData.lastName);
-        break;
-      }
-    }
-    
-    // Fill password
-    const passwordSelectors = [
-      'input[name="password"]',
-      'input[type="password"]',
-      '#password',
-      'input[placeholder*="password" i]'
-    ];
-    
-    for (const selector of passwordSelectors) {
-      const field = page.locator(selector).first();
-      if (await field.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await field.clear();
-        await field.fill(userData.password);
-        break;
-      }
-    }
-    
-    // Fill password confirmation
-    const passwordConfirmSelectors = [
-      'input[name="password_confirmation"]',
-      'input[name="confirmPassword"]', 
-      'input[name="passwordConfirm"]',
-      '#password_confirmation',
-      '#confirmPassword',
-      'input[placeholder*="confirm" i]'
-    ];
-    
-    for (const selector of passwordConfirmSelectors) {
-      const field = page.locator(selector).first();
-      if (await field.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await field.clear();
-        await field.fill(userData.password);
-        break;
-      }
-    }
+    // Use getByRole selectors which work reliably with Material-UI components
+    await page.getByRole('textbox', { name: 'First Name', exact: true }).fill(userData.firstName);
+    await page.getByRole('textbox', { name: 'Last Name', exact: true }).fill(userData.lastName);
+    await page.getByRole('textbox', { name: 'Email Address', exact: true }).fill(userData.email);
+    await page.getByRole('textbox', { name: 'Password', exact: true }).fill(userData.password);
+    await page.getByRole('textbox', { name: 'Confirm Password', exact: true }).fill(userData.password);
     
     // Select role if available
     if (userData.role) {
@@ -245,30 +161,16 @@ async function registerNewUser(page, userData, options = {}) {
     }
     
     // Submit registration form
-    const submitSelectors = [
-      'button[type="submit"]',
-      'input[type="submit"]',
-      'button:has-text("Sign Up")',
-      'button:has-text("Register")',
-      'button:has-text("Create Account")',
-      'button:has-text("Create")',
-      '[data-testid="submit-registration"]'
-    ];
-    
-    for (const selector of submitSelectors) {
-      const button = page.locator(selector).first();
-      if (await button.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await button.click();
-        break;
-      }
-    }
+    await page.getByRole('button', { name: 'Create Account' }).click();
     
     // Wait for registration to complete
     await page.waitForTimeout(3000);
     
-    // Check if we were redirected (successful registration)
+    // Check for success message or redirect
     const currentUrl = page.url();
-    const isSuccessful = !currentUrl.includes('/register') && !currentUrl.includes('/signup');
+    const hasSuccessMessage = await page.locator('text=Registration successful').isVisible().catch(() => false);
+    const wasRedirected = !currentUrl.includes('/register') && !currentUrl.includes('/signup');
+    const isSuccessful = hasSuccessMessage || wasRedirected;
     
     if (takeScreenshots) {
       await takeScreenshot(page, `04-after-registration-${userData.role}`, screenshotDir);
@@ -328,39 +230,23 @@ async function loginWithCredentials(page, email, password, options = {}) {
       await takeScreenshot(page, `05-login-page-${email.split('@')[0]}`, screenshotDir);
     }
     
-    // Fill login form
-    const emailField = page.locator('input[name="email"], input[type="email"]').first();
-    const passwordField = page.locator('input[name="password"], input[type="password"]').first();
-    
-    if (await emailField.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await emailField.clear();
-      await emailField.fill(email);
-    }
-    
-    if (await passwordField.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await passwordField.clear(); 
-      await passwordField.fill(password);
-    }
+    // Fill login form using reliable getByRole selectors
+    await page.getByRole('textbox', { name: 'Email Address', exact: true }).fill(email);
+    await page.getByRole('textbox', { name: 'Password', exact: true }).fill(password);
     
     // Submit login form
-    const submitSelectors = [
-      'button[type="submit"]',
-      'button:has-text("Sign In")',
-      'button:has-text("Login")', 
-      'button:has-text("Log In")',
-      'input[type="submit"]'
-    ];
-    
-    for (const selector of submitSelectors) {
-      const button = page.locator(selector).first();
-      if (await button.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await button.click();
-        break;
-      }
-    }
+    await page.getByRole('button', { name: 'Sign In' }).click();
     
     // Wait for login to complete
     await page.waitForTimeout(3000);
+    
+    // Check for error messages first
+    const hasErrorMessage = await page.locator('text=Unexpected token, text=not valid JSON, [role="alert"]').first().isVisible().catch(() => false);
+    
+    if (hasErrorMessage) {
+      const errorText = await page.locator('text=Unexpected token, text=not valid JSON, [role="alert"]').first().textContent().catch(() => 'Unknown error');
+      throw new Error(`Login failed with error: ${errorText}`);
+    }
     
     // Wait for redirect away from login page
     await page.waitForURL(url => !url.toString().includes('/login'), { timeout: 10000 });
@@ -370,12 +256,21 @@ async function loginWithCredentials(page, email, password, options = {}) {
       await takeScreenshot(page, `06-after-login-${email.split('@')[0]}`, screenshotDir);
     }
     
+    // Validate onboarding system
+    const onboardingValidation = await validateOnboardingSystem(page);
+    
     console.log(`✅ Login successful for ${email}`);
+    if (onboardingValidation.onboardingVisible) {
+      console.log(`🎯 Onboarding system is active: ${onboardingValidation.onboardingType}`);
+    } else {
+      console.log(`⚠️ No onboarding system detected - this indicates an issue!`);
+    }
     
     return {
       success: true,
       email,
-      currentUrl: page.url()
+      currentUrl: page.url(),
+      onboarding: onboardingValidation
     };
     
   } catch (error) {
@@ -390,6 +285,76 @@ async function loginWithCredentials(page, email, password, options = {}) {
 }
 
 /**
+ * Validates that the onboarding system is working after login
+ * @param {Page} page - Playwright page object
+ * @returns {Object} Onboarding validation result
+ */
+async function validateOnboardingSystem(page) {
+  console.log('🎯 Validating onboarding system...');
+  
+  try {
+    // Wait a moment for the page to fully render
+    await page.waitForTimeout(2000);
+    
+    // Check for different onboarding states
+    const onboardingSelectors = {
+      campaignCta: '[data-testid="onboarding-module"] .MuiPaper-root:has-text("Ready to start")',
+      carousel: '[data-testid="onboarding-module"] .MuiLinearProgress-root',
+      congratulations: '[data-testid="onboarding-module"] .MuiPaper-root:has-text("Congratulations")',
+      general: '[data-testid="onboarding-module"]'
+    };
+    
+    const results = {};
+    
+    // Check for each type of onboarding
+    for (const [type, selector] of Object.entries(onboardingSelectors)) {
+      try {
+        const isVisible = await page.locator(selector).isVisible({ timeout: 1000 });
+        results[type] = isVisible;
+        if (isVisible) {
+          console.log(`✅ Found onboarding type: ${type}`);
+        }
+      } catch (error) {
+        results[type] = false;
+      }
+    }
+    
+    // Determine the onboarding state
+    let onboardingType = 'none';
+    if (results.congratulations) {
+      onboardingType = 'congratulations';
+    } else if (results.carousel) {
+      onboardingType = 'carousel';
+    } else if (results.campaignCta) {
+      onboardingType = 'campaign-cta';
+    } else if (results.general) {
+      onboardingType = 'unknown';
+    }
+    
+    // Take a screenshot of the onboarding state
+    await takeScreenshot(page, `onboarding-validation-${onboardingType}`, 'test-results/onboarding-validation');
+    
+    return {
+      onboardingVisible: onboardingType !== 'none',
+      onboardingType,
+      details: results,
+      pageUrl: page.url()
+    };
+    
+  } catch (error) {
+    console.error('❌ Onboarding validation failed:', error.message);
+    await takeScreenshot(page, 'onboarding-validation-error', 'test-results/onboarding-validation');
+    
+    return {
+      onboardingVisible: false,
+      onboardingType: 'error',
+      error: error.message,
+      pageUrl: page.url()
+    };
+  }
+}
+
+/**
  * Confirms user email (if confirmation system is implemented)
  * @param {string} email - Email address to confirm
  * @param {Object} options - Optional configuration
@@ -398,16 +363,104 @@ async function loginWithCredentials(page, email, password, options = {}) {
 async function confirmUserEmail(email, options = {}) {
   console.log(`📧 Confirming email for: ${email}`);
   
-  // For now, this is a placeholder since email confirmation
-  // would require access to email system or mock implementation
-  console.log('⚠️ Email confirmation not implemented in test environment');
-  
-  return {
-    success: true,
-    email,
-    confirmed: true,
-    method: 'auto-confirmed' // In test environment
-  };
+  try {
+    // First, get the user's confirmation token from the database
+    const { spawn } = require('child_process');
+    
+    const confirmationToken = await new Promise((resolve, reject) => {
+      const railsCommand = spawn('bash', ['-c', `
+        cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-server && 
+        source ~/.rvm/scripts/rvm && 
+        rvm use 3.2.2 && 
+        RAILS_ENV=test rails runner "
+          user = User.find_by(email: '${email}')
+          if user && user.confirmation_token
+            puts user.confirmation_token
+          else
+            puts 'ERROR: User not found or no confirmation token'
+            exit 1
+          end
+        "
+      `]);
+      
+      let output = '';
+      let errorOutput = '';
+      
+      railsCommand.stdout.on('data', (data) => {
+        output += data.toString();
+      });
+      
+      railsCommand.stderr.on('data', (data) => {
+        errorOutput += data.toString();
+      });
+      
+      railsCommand.on('close', (code) => {
+        const lines = output.trim().split('\n');
+        // Find the line that looks like a confirmation token (alphanumeric string)
+        const token = lines.find(line => 
+          line.trim().length > 10 && 
+          /^[a-zA-Z0-9_-]+$/.test(line.trim()) &&
+          !line.includes('Using') &&
+          !line.includes('libsodium') &&
+          !line.includes('WARN') &&
+          !line.includes('ERROR')
+        )?.trim();
+        
+        if (code === 0 && token) {
+          resolve(token);
+        } else {
+          reject(new Error(`Failed to get confirmation token: ${errorOutput || output}`));
+        }
+      });
+    });
+    
+    // Now visit the actual confirmation URL
+    const { chromium } = require('playwright');
+    const TEST_CONFIG = require('../test-config');
+    
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage();
+    
+    try {
+      const confirmationUrl = `${TEST_CONFIG.getBackendUrl()}/users/confirmation?confirmation_token=${confirmationToken}`;
+      console.log(`🔗 Visiting confirmation URL: ${confirmationUrl}`);
+      
+      // Visit the confirmation URL
+      const response = await page.goto(confirmationUrl);
+      
+      // Check if the response was successful
+      if (response.status() === 200) {
+        // Wait for the page to load and get the response
+        await page.waitForLoadState('networkidle');
+        
+        // Check for success message in the JSON response
+        const content = await page.textContent('body');
+        const jsonResponse = JSON.parse(content);
+        
+        if (jsonResponse.message && jsonResponse.message.includes('confirmed successfully')) {
+          console.log('✅ Email confirmation completed via confirmation URL');
+          await browser.close();
+          return {
+            success: true,
+            email,
+            confirmed: true,
+            method: 'confirmation-url',
+            confirmationToken,
+            response: jsonResponse
+          };
+        } else {
+          throw new Error(`Unexpected confirmation response: ${content}`);
+        }
+      } else {
+        throw new Error(`Confirmation URL returned status: ${response.status()}`);
+      }
+    } finally {
+      await browser.close();
+    }
+  } catch (error) {
+    console.error(`❌ Email confirmation error: ${error.message}`);
+    throw error;
+  }
 }
 
 module.exports = {
@@ -416,5 +469,6 @@ module.exports = {
   waitForPageLoad,
   registerNewUser,
   loginWithCredentials,
-  confirmUserEmail
+  confirmUserEmail,
+  validateOnboardingSystem
 };
