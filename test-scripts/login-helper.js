@@ -18,8 +18,8 @@ async function loginToChiWar(page, email, password, options = {}) {
   try {
     console.log(`🔐 Logging in as: ${email}`);
     
-    // Navigate to application (use test configuration)
-    await page.goto(TEST_CONFIG.getFrontendUrl());
+    // Navigate to login page directly
+    await page.goto(TEST_CONFIG.getLoginUrl());
     
     // Wait for page to load and check for login form
     await page.waitForLoadState('networkidle');
