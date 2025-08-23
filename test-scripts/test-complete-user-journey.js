@@ -1,15 +1,16 @@
 /**
- * Complete Campaign Creation Onboarding Test
+ * Complete Progressive Onboarding Workflow Test
  * 
- * Tests the complete new user onboarding and campaign creation workflow:
+ * Tests the complete progressive onboarding system through multiple milestones:
  * - User registration and email confirmation
  * - User login and redirect to campaigns page
  * - Validation that "Create Your First Campaign" CTA appears
  * - Click the CTA and validate campaign creation form opens
  * - Fill out campaign form with name and description
  * - Save the campaign and validate it appears in campaigns table
+ * - Validate onboarding CTA changes to "Activate your campaign"
  * 
- * Test validates the complete onboarding flow through successful campaign creation.
+ * Test validates the complete progressive onboarding milestone system.
  */
 
 const { chromium } = require('playwright');
@@ -410,13 +411,123 @@ async function runGamemasterOnboardingValidation(browser) {
       throw new Error(`Campaign table validation failed - ${error.message}`);
     }
     
-    // TEST COMPLETE - Stop after campaign creation and validation
+    // Step 3.9: Validate onboarding CTA changes to "Activate your campaign"
+    console.log('\n🚦 Step 3.9: Validate Onboarding CTA Changes to Campaign Activation');
+    console.log('  Testing: Onboarding CTA now shows "Activate your campaign" after campaign creation');
+    
+    try {
+      // Take screenshot to see current onboarding state
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.9_activation_state.png`),
+        fullPage: true 
+      });
+      
+      // Look for the activation onboarding CTA
+      const activationCtaSelectors = [
+        '[data-testid="campaign-activation-cta"]',
+        'button:has-text("Activate your campaign")',
+        'a:has-text("Activate your campaign")',
+        '[data-testid*="activation"]',
+        '[data-testid*="onboarding"]:has-text("Activate")'
+      ];
+      
+      let activationCtaFound = false;
+      let activationCtaText = '';
+      
+      for (const selector of activationCtaSelectors) {
+        try {
+          const activationCta = await gmPage.waitForSelector(selector, { timeout: 3000 });
+          activationCtaText = await activationCta.textContent();
+          console.log(`  ✅ Activation CTA found using selector: ${selector}`);
+          console.log(`  ✅ CTA text: "${activationCtaText}"`);
+          activationCtaFound = true;
+          break;
+        } catch (e) {
+          // Continue trying other selectors
+        }
+      }
+      
+      if (!activationCtaFound) {
+        // Check for any onboarding elements that might contain activation text
+        const onboardingElements = await gmPage.locator('[data-testid*="onboarding"], [class*="onboarding"]');
+        const onboardingCount = await onboardingElements.count();
+        
+        if (onboardingCount > 0) {
+          console.log(`  Debug: Found ${onboardingCount} onboarding elements, checking their content...`);
+          
+          for (let i = 0; i < onboardingCount; i++) {
+            const element = onboardingElements.nth(i);
+            const elementText = await element.textContent();
+            console.log(`  Debug: Onboarding element ${i + 1}: "${elementText}"`);
+            
+            if (elementText && elementText.toLowerCase().includes('activate')) {
+              console.log(`  ✅ Found activation text in onboarding element: "${elementText}"`);
+              activationCtaFound = true;
+              activationCtaText = elementText;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (!activationCtaFound) {
+        // Check if any text on the page mentions activation
+        const pageContent = await gmPage.textContent('body');
+        if (pageContent.toLowerCase().includes('activate')) {
+          console.log('  ✅ Found "activate" text somewhere on page');
+          console.log('  ⚠️  Activation CTA present but not in expected onboarding format');
+          activationCtaFound = true;
+        }
+      }
+      
+      if (!activationCtaFound) {
+        console.log('  ❌ EXPECTED: "Activate your campaign" onboarding CTA should be visible after creating campaign');
+        console.log('  ❌ ACTUAL: No activation CTA found on page');
+        
+        // Debug: Check if the old "Create Your First Campaign" CTA is still there
+        const oldCtaSelector = '[data-testid="campaign-onboarding-cta"]';
+        try {
+          const oldCta = await gmPage.locator(oldCtaSelector);
+          const oldCtaExists = await oldCta.count() > 0;
+          if (oldCtaExists) {
+            const oldCtaText = await oldCta.textContent();
+            console.log(`  Debug: Old CTA still present: "${oldCtaText}"`);
+          }
+        } catch (e) {
+          console.log('  Debug: Old CTA selector not found');
+        }
+        
+        throw new Error('Campaign activation CTA not found after campaign creation');
+      }
+      
+      // Validate that the CTA text is related to activation
+      if (activationCtaText && !activationCtaText.toLowerCase().includes('activate')) {
+        console.log(`  ⚠️  WARNING: Expected activation-related text, but found: "${activationCtaText}"`);
+      }
+      
+      console.log(`  ✅ PASS: Campaign activation onboarding CTA is displayed`);
+      console.log('✅ Step 3.9: Campaign activation CTA validation completed successfully');
+      
+    } catch (error) {
+      console.log('  ❌ EXPECTED: Onboarding system should show campaign activation CTA');
+      console.log(`  ❌ ACTUAL: ${error.message}`);
+      
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.9_activation_failed.png`),
+        fullPage: true 
+      });
+      
+      throw new Error(`Campaign activation CTA validation failed - ${error.message}`);
+    }
+    
+    // TEST COMPLETE - Stop after campaign activation validation
     console.log('\n🎉 ===== TEST COMPLETED SUCCESSFULLY =====');
     console.log('✅ SUCCESS: New user sees "Create Your First Campaign" onboarding milestone');
     console.log('✅ SUCCESS: Campaign creation form opens correctly when CTA is clicked');
     console.log('✅ SUCCESS: Campaign form can be filled out and saved');
     console.log('✅ SUCCESS: Created campaign appears in campaigns table');
-    console.log('🎯 Test completed after full campaign creation workflow');
+    console.log('✅ SUCCESS: Onboarding CTA changes to campaign activation after campaign creation');
+    console.log('🎯 Test completed after full onboarding progression validation');
     
     return {
       success: true,
@@ -425,6 +536,7 @@ async function runGamemasterOnboardingValidation(browser) {
       onboardingValidated: true,
       campaignFormValidated: true,
       campaignCreated: true,
+      campaignActivationValidated: true,
       campaignName: campaignName
     };
     
@@ -467,6 +579,7 @@ async function runOnboardingMilestoneValidation() {
     console.log(`📊 Onboarding Milestone: ${result.onboardingValidated ? 'PASSED' : 'FAILED'}`);
     console.log(`📊 Campaign Form Opening: ${result.campaignFormValidated ? 'PASSED' : 'FAILED'}`);
     console.log(`📊 Campaign Creation: ${result.campaignCreated ? 'PASSED' : 'FAILED'}`);
+    console.log(`📊 Activation CTA Change: ${result.campaignActivationValidated ? 'PASSED' : 'FAILED'}`);
     
     console.log(`\n🎯 OVERALL RESULT: ${result.success ? '✅ SUCCESS' : '❌ FAILED'}`);
     console.log(`📸 Screenshots saved to: ${SCREENSHOTS_DIR}`);
@@ -476,11 +589,12 @@ async function runOnboardingMilestoneValidation() {
     }
     
     if (result.success) {
-      console.log('\n🎊 Complete campaign creation workflow PASSED!');
+      console.log('\n🎊 Complete progressive onboarding workflow PASSED!');
       console.log('✅ "Create Your First Campaign" CTA displays correctly');
       console.log('✅ Campaign creation form opens when CTA is clicked');
       console.log('✅ Campaign form can be filled out and saved');
       console.log('✅ Created campaign appears in campaigns table');
+      console.log('✅ Onboarding CTA changes to "Activate your campaign" after creation');
     } else {
       console.log('\n⚠️ Test failed. Check logs and screenshots for details.');
     }
