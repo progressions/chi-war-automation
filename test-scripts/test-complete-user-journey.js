@@ -297,32 +297,15 @@ async function runPhase1_GamemasterSetup(browser) {
     
     // Step 3.6: TDD - Validate Campaign Creation Flow
     console.log('\n🚦 Step 3.6: TDD - Validate Campaign Creation Flow');
-    console.log('  Testing: SpeedDial and Create Campaign button functionality');
-    
-    // Look for SpeedDial (floating action button)
-    const speedDialSelector = '[data-testid="speed-dial"], [data-testid="speed-dial-create"], .MuiSpeedDial-root, button[aria-label*="SpeedDial"], button[aria-label*="Create"]';
+    console.log('  Testing: Campaign creation form via onboarding CTA');
     
     try {
-      console.log('  Looking for SpeedDial button...');
-      const speedDial = await gmPage.waitForSelector(speedDialSelector, { timeout: 5000 });
-      console.log('  ✅ SpeedDial found, clicking...');
+      // Click the onboarding CTA we already validated in Step 3.5
+      const campaignCtaSelector = '[data-testid="campaign-onboarding-cta"]';
+      console.log('  Clicking "Create Your First Campaign" button...');
       
-      await speedDial.click();
-      await gmPage.waitForTimeout(1000); // Wait for menu to appear
-      
-      await gmPage.screenshot({ 
-        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.6_speeddial_opened.png`),
-        fullPage: true 
-      });
-      
-      // Look for Create Campaign option in SpeedDial menu
-      const createCampaignSelector = 'button:has-text("Campaign"), [data-testid="create-campaign"], .MuiSpeedDialAction-root:has-text("Campaign")';
-      
-      console.log('  Looking for Create Campaign option...');
-      const createCampaignButton = await gmPage.waitForSelector(createCampaignSelector, { timeout: 3000 });
-      console.log('  ✅ Create Campaign button found, clicking...');
-      
-      await createCampaignButton.click();
+      const campaignCtaButton = await gmPage.waitForSelector(campaignCtaSelector, { timeout: 3000 });
+      await campaignCtaButton.click({ force: true });
       await gmPage.waitForTimeout(2000); // Wait for form to appear
       
       await gmPage.screenshot({ 

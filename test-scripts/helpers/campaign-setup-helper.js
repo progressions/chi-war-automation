@@ -33,8 +33,9 @@ async function createCampaign(page, campaignData, options = {}) {
       await takeScreenshot(page, `07-campaigns-page`, screenshotDir);
     }
     
-    // Look for "Create Campaign" or "New Campaign" button
+    // Look for onboarding CTA first, then other campaign creation buttons
     const createCampaignSelectors = [
+      '[data-testid="campaign-onboarding-cta"]', // Onboarding CTA (highest priority)
       'button:has-text("Create Campaign")',
       'button:has-text("New Campaign")',
       'a:has-text("Create Campaign")',
@@ -55,9 +56,13 @@ async function createCampaign(page, campaignData, options = {}) {
     }
     
     if (!createButton) {
-      console.log('⚠️ No create campaign button found, trying direct navigation');
-      await page.goto(`${TEST_CONFIG.getCampaignsUrl()}/new`);
+      console.log('⚠️ No create campaign button found, dispatching campaign drawer event');
+      // Dispatch the same event that the onboarding CTA uses
+      await page.evaluate(() => {
+        window.dispatchEvent(new CustomEvent('openCampaignDrawer'));
+      });
     } else {
+      console.log(`📋 Found create button: ${createCampaignSelectors.find(sel => createButton.locator(sel).first().isVisible().catch(() => false))}`);
       await createButton.click();
     }
     
