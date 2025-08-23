@@ -522,3 +522,5 @@ This creates a systematic approach to documenting bugs, improvements, and techni
 - when writing tests, use the login-helper.js
 - always use @agent-test-environment-manager to run tests
 - in chi-war/CLAUDE.md describe the directory structure, where shot-server and shot-client-next are gitignored, each their own repo
+- When developing new features, follow the development guide in chi-war/DEVELOPMENT_GUIDE.md. 
+Always start with Phase 0 (issue/specs review) before any code exploration.

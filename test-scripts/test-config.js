@@ -23,6 +23,10 @@ const TEST_CONFIG = {
     return `${this.getFrontendUrl()}/login`;
   },
   
+  getRegisterUrl() {
+    return `${this.getFrontendUrl()}/register`;
+  },
+  
   getCampaignsUrl() {
     return `${this.getFrontendUrl()}/campaigns`;
   },
