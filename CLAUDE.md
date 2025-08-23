@@ -199,6 +199,55 @@ Component patterns:
 - Avatar and Badge components for visual representation
 - Rich text editor with mentions using TipTap
 
+### Toast Notification System
+
+The application uses a centralized toast notification system for user feedback:
+
+**Core Implementation Files:**
+- **Toast Context**: `src/contexts/ToastContext.tsx` - Main implementation
+- **Toast Component**: `src/components/PopupToast.tsx` - UI component
+- **Toast Types**: `src/types/ui.ts` - TypeScript interfaces
+
+**Available Toast Functions:**
+```typescript
+import { useToast } from "@/contexts"
+
+const { toastSuccess, toastError, toastInfo, toastWarning, closeToast } = useToast()
+
+// Usage examples:
+toastSuccess("Operation completed successfully")
+toastError("Failed to complete operation")
+toastInfo("Information message")
+toastWarning("Warning message")
+```
+
+**Common Usage Patterns:**
+```typescript
+// CRUD Operations
+try {
+  await client.createEntity(data)
+  toastSuccess("Entity created successfully")
+} catch (error) {
+  toastError("Failed to create entity")
+}
+
+// With entity context
+toastSuccess(`Campaign "${campaign.name}" activated`)
+toastError(`Error updating ${entityName}`)
+```
+
+**Toast Behavior:**
+- Auto-hide after 6 seconds
+- Single toast displayed at a time
+- Uses Material-UI Snackbar/Alert components
+- User dismissible via click or close button
+
+**Best Practices:**
+- Always pair API operations with appropriate toast notifications
+- Use descriptive, user-friendly messages
+- Include entity names for context: `"Character deleted successfully"`
+- Avoid technical error details in user-facing messages
+
 ### Communication Flow
 1. Frontend authenticates via Devise JWT tokens stored in localStorage
 2. API requests use Axios with token in Authorization header
