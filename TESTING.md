@@ -113,13 +113,42 @@ With test servers running, execute E2E tests from the test-scripts directory:
 ```bash
 cd test-scripts
 
-# Run email change protection tests
-node test-email-change-protection-e2e.js
+# Complete End-to-End User Journey Test (PRIMARY TEST)
+# Tests the full user story from new visitor to running RPG session
+# Validates onboarding system, registration, campaign creation, character creation,
+# world-building, player invitations, party formation, and fight setup
+node test-complete-user-journey.js
 
-# Run other E2E tests
+# Individual feature tests
+node test-email-change-protection-e2e.js
 node test-invitation-simple.js
 node test-profile-page.js
 ```
+
+### Complete User Journey Test
+
+The **`test-complete-user-journey.js`** script provides comprehensive validation of the entire user experience and should be used as the primary validation test for new features and onboarding flows.
+
+**Test Phases:**
+1. **Phase 1**: Gamemaster registration & campaign setup with world-building
+2. **Phase 2**: Player invitation system & user registration (4 players)
+3. **Phase 3**: Character creation for all players + GM NPC creation
+4. **Phase 4**: Session organization (party formation, fight setup)
+5. **Phase 5**: Gameplay validation (fight initiation, combat mechanics)
+
+**What it validates:**
+- New user onboarding system and milestone tracking
+- Complete registration and authentication flow
+- Campaign creation with automatic seeding
+- Invitation system end-to-end
+- Character creation and management
+- World-building functionality (factions, sites, junctures)
+- Party and fight system integration
+- Real-time combat mechanics
+
+**Test Duration:** ~10-15 minutes for complete execution
+
+**Screenshots:** All major UI states captured in `test-results/complete-user-journey/`
 
 ### Backend Tests (RSpec)
 
