@@ -1,12 +1,13 @@
 /**
- * Onboarding Milestone Validation Test
+ * Onboarding Milestone & Campaign Form Validation Test
  * 
  * Tests the new user onboarding milestone system:
  * - User registration and email confirmation
  * - User login and redirect to campaigns page
  * - Validation that "Create Your First Campaign" CTA appears
+ * - Click the CTA and validate campaign creation form opens
  * 
- * Test stops after validating the onboarding milestone is correctly displayed.
+ * Test validates the complete onboarding flow through to campaign form access.
  */
 
 const { chromium } = require('playwright');
@@ -49,10 +50,10 @@ async function ensureScreenshotDir() {
 }
 
 /**
- * Gamemaster Registration & Onboarding Milestone Validation
+ * Gamemaster Registration, Onboarding Milestone & Campaign Form Validation
  */
 async function runGamemasterOnboardingValidation(browser) {
-  console.log('\n🎮 ===== GAMEMASTER REGISTRATION & ONBOARDING MILESTONE VALIDATION =====');
+  console.log('\n🎮 ===== GAMEMASTER REGISTRATION, ONBOARDING MILESTONE & CAMPAIGN FORM VALIDATION =====');
   
   const context = await browser.newContext({
     viewport: { width: 1280, height: 1024 }
@@ -145,16 +146,104 @@ async function runGamemasterOnboardingValidation(browser) {
     
     console.log('✅ Step 3.5: New user onboarding validation completed successfully');
     
-    // TEST COMPLETE - Stop after onboarding milestone validation
+    // Step 3.6: TDD - Validate Campaign Creation Form Opens
+    console.log('\n🚦 Step 3.6: TDD - Click "Create Your First Campaign" and Validate Form Opens');
+    console.log('  Testing: Campaign creation form opens after clicking CTA');
+    
+    try {
+      // Click the onboarding CTA we already validated
+      console.log('  Clicking "Create Your First Campaign" button...');
+      
+      const campaignCtaButton = await gmPage.waitForSelector(campaignCtaSelector, { timeout: 3000 });
+      await campaignCtaButton.click();
+      await gmPage.waitForTimeout(2000); // Wait for form to appear
+      
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.6_campaign_form.png`),
+        fullPage: true 
+      });
+      
+      // Verify campaign creation form is visible
+      console.log('  Testing: Campaign creation form elements are visible');
+      
+      // Look for common form elements that should be present
+      const formSelectors = [
+        'form', 
+        '[data-testid="campaign-form"]', 
+        'input[name="name"]', 
+        'input[placeholder*="campaign" i]',
+        'input[placeholder*="name" i]'
+      ];
+      
+      let formFound = false;
+      let formSelector = '';
+      
+      for (const selector of formSelectors) {
+        try {
+          await gmPage.waitForSelector(selector, { timeout: 3000 });
+          formFound = true;
+          formSelector = selector;
+          console.log(`  ✅ Campaign form found using selector: ${selector}`);
+          break;
+        } catch (e) {
+          // Continue trying other selectors
+        }
+      }
+      
+      if (!formFound) {
+        // Additional debug - check what's actually on the page
+        const pageContent = await gmPage.textContent('body');
+        console.log('  Debug: Checking page content for form-related text...');
+        
+        if (pageContent.toLowerCase().includes('campaign')) {
+          console.log('  Debug: Found "campaign" text on page');
+        }
+        if (pageContent.toLowerCase().includes('name')) {
+          console.log('  Debug: Found "name" text on page');
+        }
+        if (pageContent.toLowerCase().includes('create')) {
+          console.log('  Debug: Found "create" text on page');
+        }
+        
+        throw new Error('Campaign creation form not found after clicking CTA');
+      }
+      
+      // Additional validation - check for form input field
+      try {
+        const nameInput = await gmPage.waitForSelector('input[name="name"], input[placeholder*="name" i]', { timeout: 3000 });
+        const inputValue = await nameInput.getAttribute('placeholder');
+        console.log(`  ✅ Campaign name input field found with placeholder: "${inputValue}"`);
+      } catch (e) {
+        console.log('  ⚠️  Campaign name input field not found, but form container is present');
+      }
+      
+      console.log('  ✅ PASS: Campaign creation form opened successfully');
+      console.log('✅ Step 3.6: Campaign form opening validation completed successfully');
+      
+    } catch (error) {
+      console.log('  ❌ EXPECTED: Campaign creation form should open after clicking CTA');
+      console.log(`  ❌ ACTUAL: ${error.message}`);
+      
+      await gmPage.screenshot({ 
+        path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.6_failed.png`),
+        fullPage: true 
+      });
+      
+      throw new Error(`TDD Test: Campaign creation form validation failed - ${error.message}`);
+    }
+    
+    // TEST COMPLETE - Stop after campaign form validation
     console.log('\n🎉 ===== TEST COMPLETED SUCCESSFULLY =====');
     console.log('✅ SUCCESS: New user sees "Create Your First Campaign" onboarding milestone');
-    console.log('🎯 Test stopped after milestone validation as requested');
+    console.log('✅ SUCCESS: Campaign creation form opens correctly when CTA is clicked');
+    console.log('🎯 Test completed after campaign form validation');
     
     return {
       success: true,
       gmPage: gmPage,
       email: GM_DATA.email,
-      onboardingValidated: true
+      onboardingValidated: true,
+      campaignFormValidated: true
     };
     
   } catch (error) {
@@ -172,10 +261,10 @@ async function runGamemasterOnboardingValidation(browser) {
 
 
 /**
- * Main test execution - Onboarding Milestone Validation
+ * Main test execution - Onboarding Milestone & Campaign Form Validation
  */
 async function runOnboardingMilestoneValidation() {
-  console.log('🚀 Starting Onboarding Milestone Validation Test');
+  console.log('🚀 Starting Onboarding Milestone & Campaign Form Validation Test');
   console.log(`📧 GM Email: ${GM_EMAIL}`);
   console.log(`📸 Screenshots: ${SCREENSHOTS_DIR}`);
   
@@ -191,16 +280,19 @@ async function runOnboardingMilestoneValidation() {
     const result = await runGamemasterOnboardingValidation(browser);
     
     // Test Summary
-    console.log('\n🎉 ===== ONBOARDING MILESTONE TEST RESULTS =====');
+    console.log('\n🎉 ===== ONBOARDING MILESTONE & CAMPAIGN FORM TEST RESULTS =====');
     console.log(`📊 Registration & Login: ${result.success ? 'PASSED' : 'FAILED'}`);
     console.log(`📊 Onboarding Milestone: ${result.onboardingValidated ? 'PASSED' : 'FAILED'}`);
+    console.log(`📊 Campaign Form Opening: ${result.campaignFormValidated ? 'PASSED' : 'FAILED'}`);
     
     console.log(`\n🎯 OVERALL RESULT: ${result.success ? '✅ SUCCESS' : '❌ FAILED'}`);
     console.log(`📸 Screenshots saved to: ${SCREENSHOTS_DIR}`);
     console.log(`📧 Test account created: ${GM_EMAIL}`);
     
     if (result.success) {
-      console.log('\n🎊 Onboarding milestone validation PASSED! "Create Your First Campaign" CTA is correctly displayed.');
+      console.log('\n🎊 Complete onboarding flow validation PASSED!');
+      console.log('✅ "Create Your First Campaign" CTA displays correctly');
+      console.log('✅ Campaign creation form opens when CTA is clicked');
     } else {
       console.log('\n⚠️ Test failed. Check logs and screenshots for details.');
     }
