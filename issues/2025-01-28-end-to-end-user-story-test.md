@@ -4,6 +4,7 @@
 **Priority:** High  
 **Category:** Testing  
 **Type:** Feature Request  
+**Status:** Completed  
 
 ## Description
 

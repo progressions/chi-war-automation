@@ -155,8 +155,8 @@ Note: Jest configuration is pending. See issue `2025-08-22-configure-jest-unit-t
 
 The test database is seeded with:
 
-- **Gamemaster**: `progressions@gmail.com` (password: `password`)
-- **Player**: `player@example.com` (password: `password`)
+- **Gamemaster**: `progressions@gmail.com` (password: `TestPass123!`)
+- **Player**: `player@example.com` (password: `TestPass123!`)
 - **Campaigns**: "Test Campaign", "Secondary Campaign", "Third Campaign"
 - **Characters**: Sample test characters
 - **User Memberships**: Player is member of multiple campaigns

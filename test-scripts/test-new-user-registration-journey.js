@@ -15,9 +15,10 @@
 const { chromium } = require('playwright');
 const path = require('path');
 
-// Use development servers (where registration works)
-const FRONTEND_URL = 'http://localhost:3001';
-const BACKEND_URL = 'http://localhost:3000';
+// Use test configuration for proper port management
+const TEST_CONFIG = require('./test-config');
+const FRONTEND_URL = TEST_CONFIG.getFrontendUrl();
+const BACKEND_URL = TEST_CONFIG.getBackendUrl();
 const SCREENSHOTS_DIR = path.join(__dirname, 'test-results', 'new-user-journey');
 
 // Generate unique test user email
