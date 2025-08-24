@@ -1216,6 +1216,11 @@ async function runGamemasterOnboardingValidation(browser) {
       console.log(`  Looking for add icon/button for ${templateName} template...`);
       
       const addIconSelectors = [
+        // NEW: Carousel select button with data-testid (most reliable)
+        '[data-testid="carousel-select-button"]',
+        'button[data-testid="carousel-select-button"]',
+        'button[aria-label="Select this template"]',
+        
         // PersonAdd icon button from Carousel component (positioned top-right of carousel item)
         '.MuiIconButton-root:has(svg[data-testid="PersonAddIcon"])',
         'button:has(svg[data-testid="PersonAddIcon"])',
