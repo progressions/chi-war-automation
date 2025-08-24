@@ -2,6 +2,8 @@
 description: Start up development environment, with Rails server and NextJS server.
 ---
 
+Use the server-manager agent for this.
+
 **Individual Server Startup:**
 
 For Rails development server:
