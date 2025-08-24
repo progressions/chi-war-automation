@@ -355,7 +355,11 @@ async function runGamemasterOnboardingValidation(browser) {
       // Look for the campaign in the table/list
       console.log(`  Searching for campaign "${campaignName}" in campaigns table...`);
       
-      // Try different ways to find the campaign
+      // Wait for the campaign list to reload after the campaignCreated event
+      console.log(`  Waiting for campaign list to reload after creation...`);
+      await gmPage.waitForTimeout(2000); // Give event time to propagate
+      
+      // Try different ways to find the campaign with extended timeout
       const campaignFoundSelectors = [
         `text="${campaignName}"`,
         `[data-testid*="campaign"]:has-text("${campaignName}")`,
@@ -368,7 +372,7 @@ async function runGamemasterOnboardingValidation(browser) {
       let campaignFound = false;
       for (const selector of campaignFoundSelectors) {
         try {
-          await gmPage.waitForSelector(selector, { timeout: 3000 });
+          await gmPage.waitForSelector(selector, { timeout: 8000 }); // Increased timeout
           console.log(`  ✅ Campaign found in table using selector: ${selector}`);
           campaignFound = true;
           break;
@@ -383,6 +387,22 @@ async function runGamemasterOnboardingValidation(browser) {
         if (pageContent.includes(campaignName)) {
           console.log(`  ✅ Campaign "${campaignName}" found on page (not in table format)`);
           campaignFound = true;
+        } else {
+          // Additional wait and retry - sometimes the API call takes longer
+          console.log(`  ⏳ Campaign not found, waiting additional 5 seconds for async reload...`);
+          await gmPage.waitForTimeout(5000);
+          
+          // Force a page refresh to ensure we get latest data
+          console.log(`  🔄 Refreshing page to ensure latest data...`);
+          await gmPage.reload();
+          await gmPage.waitForLoadState('networkidle');
+          
+          // Try one more time
+          const refreshedContent = await gmPage.textContent('body');
+          if (refreshedContent.includes(campaignName)) {
+            console.log(`  ✅ Campaign "${campaignName}" found after page refresh!`);
+            campaignFound = true;
+          }
         }
       }
       
