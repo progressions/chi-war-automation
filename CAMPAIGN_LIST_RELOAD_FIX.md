@@ -2,7 +2,7 @@
 
 **Date**: August 23, 2025  
 **Issue**: Campaign list not reloading after campaign creation in onboarding flow  
-**Status**: ✅ **RESOLVED**
+**Status**: ✅ **RESOLVED** (Frontend Fix + ActionCable Infrastructure Fix)
 
 ## Problem Summary
 
@@ -148,9 +148,74 @@ shot-client-next/src/app/(auth)/login/page.tsx
 089e1ce - Fix campaign list reload and improve login form accessibility
 ```
 
+## August 24, 2025 - ActionCable Infrastructure Fix
+
+**Additional Issue Discovered**: The frontend fix above resolved the issue in development environment, but WebSocket campaign reload still failed in the test environment.
+
+### Root Cause: Missing ActionCable Infrastructure
+
+Investigation revealed that ActionCable WebSocket support was not properly configured for API-only Rails applications:
+
+1. **Missing ActionCable Route**: `/cable` endpoint returned 404 - ActionCable server was not mounted
+2. **Missing Middleware**: API-only mode disabled session/cookie middleware required for WebSocket connections  
+3. **Test Environment**: ActionCable configuration was incomplete in test environment
+
+### Infrastructure Fixes Applied
+
+**File**: `/shot-server/config/routes.rb`
+```ruby
+# Mount ActionCable for WebSocket support
+mount ActionCable.server => '/cable'
+```
+
+**File**: `/shot-server/config/application.rb`
+```ruby
+# Enable ActionCable for WebSocket support
+config.middleware.use ActionDispatch::Cookies
+config.middleware.use ActionDispatch::Session::CookieStore
+```
+
+**File**: `/shot-server/config/environments/test.rb`
+```ruby
+# ActionCable configuration for test environment
+config.action_cable.disable_request_forgery_protection = true
+config.action_cable.url = "/cable"
+```
+
+**File**: `/shot-server/app/channels/user_channel.rb` (NEW)
+```ruby
+class UserChannel < ApplicationCable::Channel
+  def subscribed
+    stream_from "user_#{params[:id]}"
+  end
+  
+  def unsubscribed
+  end
+end
+```
+
+**File**: `/shot-server/app/models/campaign.rb`
+- Enhanced `broadcast_reload` method to use user-specific channels for new users who don't have campaign subscriptions yet
+
+### Verification
+
+After infrastructure fixes:
+- ✅ **ActionCable Endpoint**: `/cable` now properly handles WebSocket upgrade requests
+- ✅ **Test Environment**: WebSocket connections establish successfully
+- ✅ **Real-time Updates**: Campaign table refreshes immediately after creation in both development and test
+- ✅ **New User Onboarding**: UserChannel ensures broadcasts reach users creating their first campaigns
+
+### Commit
+
+```
+63c99d4 - Fix ActionCable WebSocket support for campaign real-time updates
+```
+
 ## Impact
 
 - ✅ **User Experience**: Seamless campaign creation during onboarding
-- ✅ **Test Reliability**: `test-complete-user-journey.js` should now pass campaign creation step
+- ✅ **Test Reliability**: `test-complete-user-journey.js` now passes campaign creation step in all environments
 - ✅ **Accessibility**: Better form inputs for screen readers and automation
 - ✅ **Consistency**: Campaign list behavior now matches factions list behavior
+- ✅ **Infrastructure**: ActionCable WebSocket support properly configured for API-only Rails app
+- ✅ **Environment Parity**: WebSocket functionality works consistently in development and test environments

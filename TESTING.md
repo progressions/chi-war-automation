@@ -78,6 +78,19 @@ RAILS_ENV=test rails server -p 3004
 
 Keep this running in a separate terminal. The server should start without errors.
 
+#### Start Sidekiq Background Job Processor
+
+**IMPORTANT**: Sidekiq is required for WebSocket functionality and background job processing. Start it in a separate terminal:
+
+```bash
+# From shot-server directory in another terminal
+cd shot-server
+source ~/.rvm/scripts/rvm && rvm use 3.2.2
+RAILS_ENV=test bundle exec sidekiq
+```
+
+Without Sidekiq running, tests involving real-time features (campaign updates, fight management) will fail.
+
 #### Start Next.js Test Server (Port 3005)
 
 ```bash
