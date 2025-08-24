@@ -2180,9 +2180,9 @@ async function runGamemasterOnboardingValidation(browser) {
       throw new Error(`Fight table validation failed - ${error.message}`);
     }
     
-    // Step 3.21: Validate Onboarding Updates to Party Creation
-    console.log('\n🚦 Step 3.21: Validate Onboarding Updates to Party Creation');
-    console.log('  Testing: After fight creation, onboarding should show "Create your first Party" milestone');
+    // Step 3.21: Validate Onboarding Updates to Faction Creation  
+    console.log('\n🚦 Step 3.21: Validate Onboarding Updates to Faction Creation');
+    console.log('  Testing: After character creation, onboarding should show "Create your first Faction" milestone');
     
     try {
       // Navigate to campaigns page to check onboarding module
