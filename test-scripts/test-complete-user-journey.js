@@ -622,17 +622,27 @@ async function runGamemasterOnboardingValidation(browser) {
       console.log('  Clicking "Activate" button...');
       await activateButton.click();
       
-      // Wait for the activation to process and onboarding module to update
-      console.log('  Waiting for campaign activation to complete and onboarding module to update...');
-      await gmPage.waitForTimeout(5000);
+      // Wait for the activation to process - look for the Active chip to appear
+      console.log('  Waiting for campaign activation to complete...');
       
-      // Take screenshot after clicking activate
+      // Wait for the Active status chip to appear (Material-UI Chip component)
+      const activeChipAppeared = await gmPage.waitForSelector('.MuiChip-label:has-text("Active")', { 
+        timeout: 10000 
+      }).then(() => true).catch(() => false);
+      
+      if (!activeChipAppeared) {
+        console.log('  ⚠️  Active chip did not appear within 10 seconds, continuing...');
+      } else {
+        console.log('  ✅ Active status chip appeared');
+      }
+      
+      // Take screenshot after activation
       await gmPage.screenshot({ 
         path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_step3.10_after_activate.png`),
         fullPage: true 
       });
       
-      console.log('  ✅ Activate button clicked successfully');
+      console.log('  ✅ Activate button clicked and processed');
       
     } catch (error) {
       console.log('  ❌ EXPECTED: Activate button should be clickable');
@@ -651,11 +661,20 @@ async function runGamemasterOnboardingValidation(browser) {
       console.log(`  Verifying campaign "${campaignName}" status changed to "Active"...`);
       
       // Look for "Active" status indicators in the campaign row/area
+      // Based on campaigns/Table.tsx, the Active chip uses Material-UI Chip component
       const activeStatusSelectors = [
+        // Material-UI Chip selectors (most accurate based on campaigns/Table.tsx)
+        '.MuiChip-label:has-text("Active")',
+        '.MuiChip-colorSuccess .MuiChip-label:has-text("Active")',
+        '[role="gridcell"] .MuiChip-root:has-text("Active")',
+        
+        // Row-specific selectors for our campaign
+        `[role="row"]:has-text("${campaignName}") .MuiChip-label:has-text("Active")`,
+        `.MuiDataGrid-row:has-text("${campaignName}") .MuiChip-label:has-text("Active")`,
+        
+        // Fallback selectors
         `tr:has-text("${campaignName}"):has-text("Active")`,
         `[data-testid*="campaign"]:has-text("${campaignName}"):has-text("Active")`,
-        `tr:has-text("${campaignName}") .status:has-text("Active")`,
-        `tr:has-text("${campaignName}") [data-testid*="status"]:has-text("Active")`,
         
         // General status indicators (if only one campaign)
         'td:has-text("Active")',
@@ -664,12 +683,18 @@ async function runGamemasterOnboardingValidation(browser) {
       ];
       
       let activeStatusFound = false;
+      let activeStatusSelector = '';
+      
+      // Try each selector with a shorter timeout
       for (const selector of activeStatusSelectors) {
         try {
-          await gmPage.waitForSelector(selector, { timeout: 5000 });
-          console.log(`  ✅ Active status found using selector: ${selector}`);
-          activeStatusFound = true;
-          break;
+          const element = await gmPage.waitForSelector(selector, { timeout: 2000 });
+          if (element) {
+            activeStatusSelector = selector;
+            console.log(`  ✅ Active status found using selector: ${selector}`);
+            activeStatusFound = true;
+            break;
+          }
         } catch (e) {
           // Continue trying other selectors
         }
