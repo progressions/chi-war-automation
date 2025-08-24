@@ -543,21 +543,34 @@ async function runGamemasterOnboardingValidation(browser) {
     
     // Step 3.10: Click Activate button and validate campaign status changes
     console.log('\n🚦 Step 3.10: Click Activate Button and Validate Campaign Status');
-    console.log(`  Testing: Click "Activate" button for campaign "${campaignName}" and verify status changes to "Active"`);
+    console.log(`  Testing: Click "Activate" button in campaigns table row for "${campaignName}" and verify status changes to "Active"`);
     
     try {
-      // First, find the activate button for our specific campaign
-      console.log(`  Searching for "Activate" button for campaign "${campaignName}"...`);
+      // First, find the activate button in the campaigns table row for our specific campaign
+      console.log(`  Searching for "Activate" button in campaigns table row for "${campaignName}"...`);
       
-      // Try different strategies to find the activate button
+      // Look for the "Activate" button in the campaigns table row (Material-UI Button structure)
       const activateButtonSelectors = [
-        // Campaign-specific activate buttons
-        `tr:has-text("${campaignName}") button:has-text("Activate")`,
-        `[data-testid*="campaign"]:has-text("${campaignName}") button:has-text("Activate")`,
-        `tr:has-text("${campaignName}") [data-testid*="activate"]`,
-        `tr:has-text("${campaignName}") .activate-button`,
+        // Campaign table row activate buttons - Material-UI Button with primary variant
+        `tr:has-text("${campaignName}") .MuiButton-containedPrimary:has-text("Activate")`,
+        `tr:has-text("${campaignName}") button[class*="MuiButton-contained"]:has-text("Activate")`,
+        `tr:has-text("${campaignName}") button[class*="MuiButton-containedPrimary"]:has-text("Activate")`,
         
-        // General activate buttons (if campaign is the only one)
+        // Standard table row selectors
+        `tr:has-text("${campaignName}") button:has-text("Activate")`,
+        `tbody tr:has-text("${campaignName}") button:has-text("Activate")`,
+        `table tr:has-text("${campaignName}") button:has-text("Activate")`,
+        
+        // DataGrid specific selectors (MUI DataGrid structure)
+        `[data-testid*="campaign"]:has-text("${campaignName}") button:has-text("Activate")`,
+        `.MuiDataGrid-row:has-text("${campaignName}") button:has-text("Activate")`,
+        
+        // General table activate buttons
+        'tbody button:has-text("Activate")',
+        'table button:has-text("Activate")',
+        '.MuiButton-containedPrimary:has-text("Activate")',
+        
+        // General activate buttons (fallback)
         'button:has-text("Activate")',
         '[data-testid="activate-button"]',
         '[data-testid*="activate"]',
@@ -609,8 +622,9 @@ async function runGamemasterOnboardingValidation(browser) {
       console.log('  Clicking "Activate" button...');
       await activateButton.click();
       
-      // Wait for the activation to process
-      await gmPage.waitForTimeout(3000);
+      // Wait for the activation to process and onboarding module to update
+      console.log('  Waiting for campaign activation to complete and onboarding module to update...');
+      await gmPage.waitForTimeout(5000);
       
       // Take screenshot after clicking activate
       await gmPage.screenshot({ 
@@ -699,13 +713,15 @@ async function runGamemasterOnboardingValidation(browser) {
       throw new Error(`Campaign status validation failed - ${error.message}`);
     }
     
-    // Step 3.11: Validate onboarding CTA changes to "Create your first character"
-    console.log('\n🚦 Step 3.11: Validate Onboarding CTA Changes to Character Creation');
-    console.log('  Testing: After campaign activation, onboarding CTA should show "Create your first character"');
+    // Step 3.11: Validate onboarding module updates after campaign activation
+    console.log('\n🚦 Step 3.11: Validate Onboarding Module Updates After Campaign Activation');
+    console.log('  Testing: After clicking "Activate" button in campaigns table, onboarding module should show:');
+    console.log('    1. Milestone text: "Create your first Character!"'); 
+    console.log('    2. CTA button text: "Go to Characters" (instead of "Activate Campaign ->")');
     
     try {
-      // Wait a moment for the UI to update after campaign activation
-      await gmPage.waitForTimeout(3000);
+      // Wait a moment for the UI to update after campaign activation and potential WebSocket updates
+      await gmPage.waitForTimeout(5000);
       
       // Take screenshot to see current onboarding state after activation
       await gmPage.screenshot({ 
@@ -713,14 +729,50 @@ async function runGamemasterOnboardingValidation(browser) {
         fullPage: true 
       });
       
-      // Look for the character creation onboarding CTA
+      // Step 1: Verify onboarding module is still visible and updated
+      const pageText = await gmPage.textContent('body');
+      console.log('  Step 1: Checking onboarding module visibility...');
+      
+      if (!pageText.includes('Great! Now build your world:')) {
+        throw new Error('Onboarding module disappeared after campaign activation - should remain visible with updated content');
+      }
+      console.log('    ✅ Onboarding module is still visible');
+      
+      // Step 2: Verify milestone text changed to character creation
+      console.log('  Step 2: Verifying milestone text updated to character creation...');
+      
+      if (pageText.includes('Activate your Campaign!')) {
+        throw new Error('Onboarding still shows "Activate your Campaign!" milestone - should have updated to character creation after clicking Activate button');
+      }
+      
+      if (!pageText.includes('Create your first Character!')) {
+        throw new Error('Onboarding milestone should show "Create your first Character!" after campaign activation');
+      }
+      console.log('    ✅ Milestone correctly updated to "Create your first Character!"');
+      
+      // Step 3: Verify CTA button changed from "Activate Campaign ->" to "Go to Characters"
+      console.log('  Step 3: Verifying CTA button updated to "Go to Characters"...');
+      
+      if (pageText.includes('Activate Campaign ->')) {
+        throw new Error('Onboarding still shows "Activate Campaign ->" button - should have changed to "Go to Characters" after activation');
+      }
+      
+      // Look for the character creation onboarding CTA (should be in the onboarding panel)
       const characterCtaSelectors = [
+        // Look for "Go to Characters" button in onboarding panel after activation
+        'button:has-text("Go to Characters")',
+        'a:has-text("Go to Characters")',
+        'button:has-text("Characters")',
+        
+        // Look for character creation CTAs
         '[data-testid="character-creation-cta"]',
         'button:has-text("Create your first character")',
         'a:has-text("Create your first character")',
+        'button:has-text("Create Character")',
         '[data-testid*="character"]:has-text("Create")',
         '[data-testid*="onboarding"]:has-text("character")',
-        // More generic selectors for character-related CTAs
+        
+        // More generic selectors
         'button:has-text("character")',
         'a:has-text("character")',
         '[data-testid*="onboarding"]:has-text("first")'
@@ -808,8 +860,11 @@ async function runGamemasterOnboardingValidation(browser) {
         console.log(`  ✅ PASS: Character creation CTA text is appropriate: "${characterCtaText}"`);
       }
       
-      console.log(`  ✅ PASS: Character creation onboarding CTA is displayed after campaign activation`);
-      console.log('✅ Step 3.11: Character creation CTA validation completed successfully');
+      console.log(`    ✅ CTA button correctly updated to "Go to Characters"`);
+      console.log(`  ✅ PASS: Onboarding module correctly updated after campaign activation:`);
+      console.log(`    - Milestone: "Create your first Character!"`);
+      console.log(`    - CTA Button: "Go to Characters"`);
+      console.log('✅ Step 3.11: Onboarding module update validation completed successfully');
       
       // Take final screenshot showing successful character CTA milestone
       await gmPage.screenshot({ 
