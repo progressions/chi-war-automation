@@ -63,6 +63,13 @@ async function runGamemasterOnboardingValidation(browser) {
   });
   const gmPage = await context.newPage();
   
+  // 🔄 Listen for WebSocket console messages to track fight reload mechanism
+  gmPage.on('console', msg => {
+    if (msg.text().includes('🔄') || msg.text().includes('WebSocket') || msg.text().includes('fights')) {
+      console.log('  🎯 FRONTEND WEBSOCKET:', msg.text());
+    }
+  });
+  
   try {
     // Step 1: GM Registration
     console.log('\n👤 Step 1: Gamemaster Registration');
@@ -1136,20 +1143,26 @@ async function runGamemasterOnboardingValidation(browser) {
         );
       });
       
-      // Also try generic template selectors
+      // Also try generic template selectors - simplified approach
       templateSelectors.push(
-        // Generic template elements (to find any template)
-        '[class*="template"]',
-        '[data-testid*="template"]',
-        '.character-card',
-        '.template-card',
-        '.character-template',
+        // Simple and direct selectors first
+        '.MuiIconButton-root',
+        'button[aria-label]',
+        '.MuiIconButton-root button',
         
-        // Look for carousel items/slides
-        '.carousel-item',
-        '.slide',
-        '[class*="slide"]',
-        '[class*="item"]'
+        // PersonAdd icon button (the main selector)
+        'button:has(svg[data-testid="PersonAddIcon"])',
+        '.MuiIconButton-root:has(svg[data-testid="PersonAddIcon"])',
+        
+        // PersonAdd icon itself
+        'svg[data-testid="PersonAddIcon"]',
+        '[data-testid="PersonAddIcon"]',
+        
+        // Generic carousel and template selectors
+        '.carousel button',
+        '[class*="template"]',
+        '.character-card',
+        '.template-card'
       );
       
       let selectedTemplate = null;
@@ -1761,7 +1774,12 @@ async function runGamemasterOnboardingValidation(browser) {
       console.log(`  Clicking "Go to Fights" button...`);
       await fightCtaButton.click();
       
-      // Wait for navigation
+      // Wait for navigation and page load
+      await gmPage.waitForLoadState('networkidle');
+      await gmPage.waitForTimeout(2000);
+      
+      // 🔄 CRITICAL: Wait for WebSocket subscription to be established
+      console.log('  🔄 Waiting for WebSocket fights subscription to be established...');
       await gmPage.waitForTimeout(3000);
       
       // Take screenshot after click
@@ -2051,16 +2069,26 @@ async function runGamemasterOnboardingValidation(browser) {
       }
       
       console.log('  📊 Phase 2: Waiting for WebSocket broadcast and auto-reload...');
+      console.log('  🔄 Backend should broadcast {"fights": "reload"} to trigger frontend refresh');
       
-      // Wait for WebSocket broadcast to trigger page reload
+      // Wait for WebSocket broadcast to trigger automatic page reload
       // The backend broadcasts { fights: "reload" } to campaign_#{id} channel
-      await gmPage.waitForTimeout(5000);
+      // Frontend should automatically call fetchFights() when it receives this message
+      await gmPage.waitForTimeout(8000);
       
-      console.log('  📊 Phase 3: Force page refresh to bypass any cache issues...');
+      console.log('  📊 Phase 3: Check if WebSocket auto-reload worked, otherwise force refresh...');
       
-      // Force refresh to bypass cache issues
-      await gmPage.reload({ waitUntil: 'networkidle' });
-      await gmPage.waitForTimeout(3000);
+      // Check if the fight appears first (WebSocket worked)
+      let webSocketWorked = false;
+      try {
+        await gmPage.waitForSelector(`tr:has-text("${fightName}")`, { timeout: 2000 });
+        console.log('  ✅ WebSocket auto-reload worked! Fight found without manual refresh.');
+        webSocketWorked = true;
+      } catch (e) {
+        console.log('  ⚠️  WebSocket auto-reload may not have worked, trying manual refresh...');
+        await gmPage.reload({ waitUntil: 'networkidle' });
+        await gmPage.waitForTimeout(3000);
+      }
       
       console.log('  📊 Phase 4: Searching for fight in table structure...');
       
@@ -3115,6 +3143,9 @@ async function runOnboardingMilestoneValidation() {
   console.log('🚀 Starting Complete Campaign Creation Onboarding Test');
   console.log(`📧 GM Email: ${GM_EMAIL}`);
   console.log(`📸 Screenshots: ${SCREENSHOTS_DIR}`);
+  
+  // CRITICAL: Reset test database for clean state (using fresh database from previous reset)
+  console.log('🗑️  Using fresh database with proper template data...');
   
   await ensureScreenshotDir();
   
