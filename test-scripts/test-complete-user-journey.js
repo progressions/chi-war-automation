@@ -819,15 +819,44 @@ async function runCompleteOnboardingFlow(browser) {
     const fightFab = await gmPage.waitForSelector('.MuiSpeedDial-fab, .MuiFab-root', { timeout: 10000 });
     await fightFab.click();
     await gmPage.waitForTimeout(1000);
-    const createFightButton = await gmPage.waitForSelector('button:has-text("Create"), button:has-text("New"), .MuiSpeedDialAction-fab:first-of-type', { timeout: 5000 });
+    
+    // Try multiple selectors for the create/new fight button
+    const fightCreateButtonSelectors = [
+      'button:has-text("Create")',
+      'button:has-text("New")',
+      'button:has-text("New Fight")',
+      '[data-testid="speed-dial-fight"]',
+      '.MuiSpeedDialAction-fab:first-of-type',
+      '[aria-label="Create"]',
+      '[aria-label="New Fight"]'
+    ];
+    
+    let createFightButton = null;
+    for (const selector of fightCreateButtonSelectors) {
+      try {
+        createFightButton = await gmPage.waitForSelector(selector, { timeout: 2000 });
+        console.log(`  Found create button with selector: ${selector}`);
+        break;
+      } catch (e) {
+        // Continue trying
+      }
+    }
+    
+    if (!createFightButton) {
+      throw new Error('Could not find create fight button');
+    }
+    
     await createFightButton.click();
     
-    // Wait for SpeedDial options
-    await gmPage.waitForTimeout(1000);
-    
-    // Click "New Fight" option
-    const newFightOption = await gmPage.waitForSelector('[data-testid="speed-dial-fight"], button:has-text("New Fight")');
-    await newFightOption.click();
+    // Check if we need to click a second button (for multi-step creation)
+    try {
+      const newFightOption = await gmPage.waitForSelector('[data-testid="speed-dial-fight"], button:has-text("New Fight")', { timeout: 2000 });
+      console.log('  Found secondary "New Fight" button, clicking...');
+      await newFightOption.click();
+    } catch (e) {
+      // Single-step creation, continue
+      console.log('  Single-step fight creation detected');
+    }
     
     // Fill fight form
     await gmPage.fill('input[name="name"]', 'Final Boss Battle');
