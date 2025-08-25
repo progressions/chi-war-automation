@@ -319,65 +319,134 @@ async function runCompleteOnboardingFlow(browser) {
         path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_character_carousel_debug.png`),
         fullPage: true 
       });
-      throw new Error('Could not find carousel select button');
-    }
-    
-    // Click the select button
-    await selectButton.click();
-    console.log('  Clicked carousel select button');
-    
-    // Wait for the confirm dialog to appear
-    await gmPage.waitForTimeout(2000);
-    console.log('  Waiting for character creation confirm dialog...');
-    
-    // Look for the Confirm button in the dialog
-    const confirmSelectors = [
-      'button:has-text("Confirm")',
-      'button:has-text("Create")',
-      'button:has-text("Yes")',
-      'button:has-text("OK")',
-      '[data-testid="confirm-button"]',
-      '.MuiDialog-root button.MuiButton-containedPrimary'
-    ];
-    
-    let confirmButton = null;
-    for (const selector of confirmSelectors) {
-      try {
-        confirmButton = await gmPage.waitForSelector(selector, { timeout: 3000 });
-        if (confirmButton) {
-          console.log(`  Found confirm button with selector: ${selector}`);
-          break;
-        }
-      } catch (e) {
-        // Continue trying other selectors
-      }
-    }
-    
-    if (confirmButton) {
-      // Click the confirm button to create the character from template
-      await confirmButton.click();
-      console.log('  Clicked confirm button to create character from template');
-    } else {
-      // If no confirm dialog, maybe there's a form to fill
-      console.log('  No confirm dialog found, checking for character form...');
       
-      // Try to find and fill a name input if it exists
+      // Try alternative approach - use SpeedDial to create character
+      console.log('  Could not find carousel, trying SpeedDial approach...');
+      
+      // Try to find SpeedDial FAB
+      const fabSelectors = [
+        '.MuiSpeedDial-fab',
+        '.MuiFab-root',
+        'button[aria-label*="speed dial"]',
+        '[data-testid="speed-dial"]',
+        'button.MuiFab-primary'
+      ];
+      
+      let fabClicked = false;
+      for (const selector of fabSelectors) {
+        try {
+          const fabButton = await gmPage.waitForSelector(selector, { timeout: 2000 });
+          if (fabButton) {
+            await fabButton.click();
+            console.log(`  Clicked SpeedDial FAB using selector: ${selector}`);
+            fabClicked = true;
+            break;
+          }
+        } catch (e) {
+          // Try next selector
+        }
+      }
+      
+      if (!fabClicked) {
+        throw new Error('Could not find carousel select button or SpeedDial FAB');
+      }
+      
+      // Wait for menu to open
+      await gmPage.waitForTimeout(1500);
+      
+      // Click Create in SpeedDial menu
+      const createSelectors = [
+        '[aria-label="Create"]',
+        'button:has-text("Create")',
+        '.MuiSpeedDialAction-fab:first-of-type'
+      ];
+      
+      for (const selector of createSelectors) {
+        try {
+          const createButton = await gmPage.waitForSelector(selector, { timeout: 2000 });
+          if (createButton) {
+            await createButton.click();
+            console.log('  Clicked Create button in SpeedDial menu');
+            break;
+          }
+        } catch (e) {
+          // Try next
+        }
+      }
+      
+      // Wait for form to open
+      await gmPage.waitForTimeout(2000);
+      
+      // Fill in basic character form
       try {
-        const nameInput = await gmPage.waitForSelector('input[name="name"], input[type="text"]', { timeout: 3000 });
-        await nameInput.fill('Test Hero');
+        await gmPage.fill('input[name="name"]', 'Test Character');
         console.log('  Filled character name');
         
-        // Save character
+        // Save the character
         const saveButton = await gmPage.waitForSelector('button:has-text("Save")', { timeout: 3000 });
         await saveButton.click();
-        console.log('  Clicked save button');
+        console.log('  Saved character');
       } catch (e) {
-        // Take a screenshot for debugging
-        await gmPage.screenshot({ 
-          path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_character_creation_debug.png`),
-          fullPage: true 
-        });
-        console.log('  ⚠️  Could not find character form or confirm dialog');
+        console.log('  Could not fill character form');
+      }
+    } else {
+      // Click the select button
+      await selectButton.click();
+      console.log('  Clicked carousel select button');
+      
+      // Wait for the confirm dialog to appear
+      await gmPage.waitForTimeout(2000);
+      console.log('  Waiting for character creation confirm dialog...');
+      
+      // Look for the Confirm button in the dialog
+      const confirmSelectors = [
+        'button:has-text("Confirm")',
+        'button:has-text("Create")',
+        'button:has-text("Yes")',
+        'button:has-text("OK")',
+        '[data-testid="confirm-button"]',
+        '.MuiDialog-root button.MuiButton-containedPrimary'
+      ];
+      
+      let confirmButton = null;
+      for (const selector of confirmSelectors) {
+        try {
+          confirmButton = await gmPage.waitForSelector(selector, { timeout: 3000 });
+          if (confirmButton) {
+            console.log(`  Found confirm button with selector: ${selector}`);
+            break;
+          }
+        } catch (e) {
+          // Continue trying other selectors
+        }
+      }
+      
+      if (confirmButton) {
+        // Click the confirm button to create the character from template
+        await confirmButton.click();
+        console.log('  Clicked confirm button to create character from template');
+      } else {
+        // If no confirm dialog, maybe there's a form to fill
+        console.log('  No confirm dialog found, checking for character form...');
+        
+        // Try to find and fill a name input if it exists
+        try {
+          const nameInput = await gmPage.waitForSelector('input[name="name"], input[type="text"]', { timeout: 3000 });
+          await nameInput.fill('Test Hero');
+          console.log('  Filled character name');
+          
+          // Save character
+          const saveButton = await gmPage.waitForSelector('button:has-text("Save")', { timeout: 3000 });
+          await saveButton.click();
+          console.log('  Clicked save button');
+        } catch (e) {
+          // Take a screenshot for debugging
+          await gmPage.screenshot({ 
+            path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_character_creation_debug.png`),
+            fullPage: true 
+          });
+          console.log('  ⚠️  Could not find character form or confirm dialog');
+        }
       }
     }
     
@@ -593,12 +662,91 @@ async function runCompleteOnboardingFlow(browser) {
     await gmPage.waitForLoadState('networkidle');
     await gmPage.waitForTimeout(3000);
     
-    // Click SpeedDial FAB then Create button
-    const partyFab = await gmPage.waitForSelector('.MuiSpeedDial-fab, .MuiFab-root', { timeout: 10000 });
-    await partyFab.click();
-    await gmPage.waitForTimeout(1000);
-    const createPartyButton = await gmPage.waitForSelector('button:has-text("Create"), .MuiSpeedDialAction-fab:first-of-type', { timeout: 5000 });
-    await createPartyButton.click();
+    // Take screenshot to debug page state
+    await gmPage.screenshot({ 
+      path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_parties_page.png`),
+      fullPage: true 
+    });
+    
+    // Try multiple approaches to find and click the FAB
+    let partyFabClicked = false;
+    const partyFabSelectors = [
+      '.MuiSpeedDial-fab',
+      '.MuiFab-root',
+      'button[aria-label*="speed dial"]',
+      '[data-testid="speed-dial"]',
+      'button.MuiFab-primary'
+    ];
+    
+    for (const selector of partyFabSelectors) {
+      try {
+        const fabButton = await gmPage.waitForSelector(selector, { timeout: 3000 });
+        if (fabButton) {
+          await fabButton.click();
+          console.log(`  Clicked SpeedDial FAB using selector: ${selector}`);
+          partyFabClicked = true;
+          break;
+        }
+      } catch (e) {
+        // Try next selector
+      }
+    }
+    
+    if (!partyFabClicked) {
+      // If no FAB found, maybe there's a direct create button
+      console.log('  Could not find SpeedDial FAB, looking for direct Create button...');
+      try {
+        const directCreateButton = await gmPage.waitForSelector('button:has-text("Create"), button:has-text("New Party")', { timeout: 3000 });
+        await directCreateButton.click();
+        console.log('  Clicked direct Create button');
+        partyFabClicked = true;
+      } catch (e) {
+        console.log('  No direct Create button found either');
+      }
+    }
+    
+    if (!partyFabClicked) {
+      throw new Error('Could not find any way to create a party');
+    }
+    
+    await gmPage.waitForTimeout(1500);
+    
+    // Take screenshot to see the SpeedDial menu
+    await gmPage.screenshot({ 
+      path: path.join(SCREENSHOTS_DIR, `${TIMESTAMP}_party_speed_dial_menu_open.png`),
+      fullPage: true 
+    });
+    
+    // Now click the "Create" option in the SpeedDial menu
+    const partyCreateButtonSelectors = [
+      '[aria-label="Create"]',
+      'button:has-text("Create")',
+      '.MuiSpeedDialAction-fab:has(svg)',
+      '.MuiSpeedDialAction-fab'
+    ];
+    
+    let partyCreateClicked = false;
+    for (const selector of partyCreateButtonSelectors) {
+      try {
+        const buttons = await gmPage.$$(selector);
+        if (buttons && buttons.length > 0) {
+          // Try the second button first (index 1) as it's usually Create
+          const buttonToClick = buttons.length > 1 ? buttons[1] : buttons[0];
+          await buttonToClick.click();
+          console.log(`  Clicked create party button using selector: ${selector}`);
+          partyCreateClicked = true;
+          break;
+        }
+      } catch (e) {
+        // Try next selector
+      }
+    }
+    
+    if (!partyCreateClicked) {
+      throw new Error('Could not find Create button in SpeedDial menu for party');
+    }
+    
+    await gmPage.waitForTimeout(2000);
     
     // Fill party form
     await gmPage.fill('input[name="name"]', 'Test Party');
