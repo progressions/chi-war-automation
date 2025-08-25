@@ -27,7 +27,7 @@ The following features have been implemented:
 
 ### Features
 
-- [ ] **Dismissable Onboarding Modules** - Add dismiss buttons to each module of the onboarding system for improved user control `S`
+- [x] **Dismissable Onboarding Modules** - Add dismiss buttons to each module of the onboarding system for improved user control `S`
 - [ ] **Full Encounter Interface** - Complete gamemaster interface to manage and run fights with drag-and-drop initiative management `XL`
 - [ ] **Character Health & State Tracking** - Real-time health, wound penalties, and status effect management for all participants `L`
 - [ ] **Player Combat Interface** - Dedicated player interface for managing character actions, rolling dice, and tracking personal stats during encounters `L`
