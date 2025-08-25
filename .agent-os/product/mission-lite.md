@@ -1,0 +1,5 @@
+# Product Mission (Lite)
+
+Chi War is a comprehensive digital campaign management platform that helps Feng Shui 2 RPG gamemasters efficiently manage complex campaigns with multiple players, NPCs, and ongoing storylines by providing real-time collaboration, AI-powered character generation, and seamless integration with Discord and other tools.
+
+Chi War serves experienced Feng Shui 2 gamemasters and players who need specialized tools for managing the game's unique mechanics including juncture-based storytelling and shot counter initiative systems. Unlike generic tabletop RPG tools, Chi War provides purpose-built features for Feng Shui 2's specific gameplay elements, resulting in faster session preparation and seamless combat resolution with AI-powered NPC generation and real-time collaborative features.
