@@ -19,6 +19,7 @@ The following features have been implemented:
 - [x] PDF Character Sheets - Generate printable character sheets for hybrid gameplay
 - [x] Notion Integration - Sync character data with external Notion workspaces
 - [x] Comprehensive Testing Infrastructure - RSpec (backend), Jest (frontend), Playwright (E2E) with 90%+ coverage
+- [x] **Visibility Filter Dropdown** - Enhanced entity filtering with "Visible", "Hidden", "All" options replacing checkbox pattern across all entity lists
 
 ## Phase 1: Enhanced Encounter Management (CURRENT)
 
