@@ -43,11 +43,20 @@ This guide walks you through setting up CircleCI to automatically run tests on y
 1. Go to **Project Settings** → **Environment Variables**
 2. Add the following required environment variables:
    ```
-   DATABASE_URL=postgresql://circleci@localhost/shot_server_test
-   RAILS_MASTER_KEY=(your Rails master key from config/master.key)
+   RAILS_TEST_KEY=(contents of config/credentials/test.key)
+   ```
+   
+   **Important**: Never commit credential keys to your repository. Always use environment variables in CI/CD.
+   
+   To get your test key:
+   ```bash
+   cat config/credentials/test.key
+   ```
+   
+   Optional variables (if needed):
+   ```
    SECRET_KEY_BASE=(generate with: rails secret)
    JWT_SECRET_KEY=(generate a secure random string)
-   REDIS_URL=redis://localhost:6379
    ```
 
 ### Important: Before First Run
