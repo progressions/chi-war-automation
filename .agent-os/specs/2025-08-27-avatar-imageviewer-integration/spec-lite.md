@@ -1,0 +1,3 @@
+# Spec Summary (Lite)
+
+Integrate the existing ImageViewer component with all entity Avatar components to allow users to view full-size images by clicking on avatars. This enhancement improves the visual experience during gameplay by providing quick access to character artwork, campaign imagery, and other entity visuals across all entity types including Campaign, Fight, Character, Vehicle, Site, Faction, Schtick, Weapon, Juncture, and User avatars.
