@@ -1,0 +1,3 @@
+# Spec Summary (Lite)
+
+Implement an active/inactive toggle on entity Show pages that allows Admin and Gamemaster users to soft-delete or restore entities directly from the UI. The toggle should only be visible to users with appropriate permissions (Admin role or Gamemaster of the current campaign) and update the entity's active status via existing API endpoints with proper feedback. This is a frontend-only change leveraging existing backend functionality.
