@@ -1,0 +1,3 @@
+# Spec Summary (Lite)
+
+Implement vehicle chase mechanics integrated with the existing fight system, featuring a ChasePanel UI for managing pursuits and evasions with chase point tracking toward 35/50-point victory thresholds. The system handles Near/Far gap distances, driving checks using vehicle stats and driver skills, sideswipe attacks for vehicles at Near range, and driver assignment/reassignment during encounters. Chases run concurrently with regular combat using the same Shot countdown system, with passengers able to attack or provide Boosts while drivers make mandatory driving checks as their first action each sequence.

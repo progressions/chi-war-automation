@@ -1,25 +1,59 @@
 # CSS Style Guide
 
-We always use the latest version of TailwindCSS for all CSS.
+We always use Material-UI (MUI) for all CSS and component styling.
 
-### Multi-line CSS classes in markup
+### Material-UI Styling Approach
 
-- We use a unique multi-line formatting style when writing Tailwind CSS classes in HTML markup and ERB tags, where the classes for each responsive size are written on their own dedicated line.
-- The top-most line should be the smallest size (no responsive prefix). Each line below it should be the next responsive size up.
-- Each line of CSS classes should be aligned vertically.
-- focus and hover classes should be on their own additional dedicated lines.
-- We implement one additional responsive breakpoint size called 'xs' which represents 400px.
-- If there are any custom CSS classes being used, those should be included at the start of the first line.
+- We use Material-UI v7 components and styling system with Emotion CSS-in-JS
+- All styling should use MUI's theme system and sx prop for custom styles
+- Components should leverage MUI's responsive breakpoints and design tokens
+- Custom styling should extend MUI's theme rather than override it
+- We implement responsive design using MUI's breakpoint system
 
-**Example of multi-line Tailwind CSS classes:**
+**Example of Material-UI component styling:**
 
-<div class="custom-cta bg-gray-50 dark:bg-gray-900 p-4 rounded cursor-pointer w-full
-            hover:bg-gray-100 dark:hover:bg-gray-800
-            xs:p-6
-            sm:p-8 sm:font-medium
-            md:p-10 md:text-lg
-            lg:p-12 lg:text-xl lg:font-semibold lg:2-3/5
-            xl:p-14 xl:text-2xl
-            2xl:p-16 2xl:text-3xl 2xl:font-bold 2xl:w-3/4">
-  I'm a call-to-action!
-</div>
+```tsx
+import { Box, Button, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+
+<Box
+  sx={{
+    bgcolor: 'grey.50',
+    p: { xs: 2, sm: 3, md: 4 },
+    borderRadius: 1,
+    cursor: 'pointer',
+    width: '100%',
+    '&:hover': {
+      bgcolor: 'grey.100',
+    },
+    [theme.breakpoints.up('sm')]: {
+      fontWeight: 'medium',
+    },
+    [theme.breakpoints.up('md')]: {
+      fontSize: '1.125rem',
+    },
+    [theme.breakpoints.up('lg')]: {
+      fontSize: '1.25rem',
+      fontWeight: 'semibold',
+    },
+  }}
+>
+  <Typography variant="h6">I'm a call-to-action!</Typography>
+</Box>
+```
+
+### MUI Responsive Breakpoints
+
+Use MUI's standard breakpoint system:
+- **xs**: 0px (extra small devices)
+- **sm**: 600px (small devices)
+- **md**: 960px (medium devices)
+- **lg**: 1280px (large devices)
+- **xl**: 1920px (extra large devices)
+
+### Theme Integration
+
+- Use theme colors: `primary.main`, `secondary.main`, `grey.50`, etc.
+- Use theme spacing: `theme.spacing(1)` or shorthand `p: 2`
+- Use theme typography: `theme.typography.h1`, `variant="h6"`
+- Use theme breakpoints: `theme.breakpoints.up('md')`
