@@ -37,8 +37,8 @@ ELSE:
 - Keep comments concise and relevant
 </conditional-block>
 
-<conditional-block task-condition="html-css-tailwind" context-check="html-css-style">
-IF current task involves writing or updating HTML, CSS, or TailwindCSS:
+<conditional-block task-condition="html-css-mui" context-check="html-css-style">
+IF current task involves writing or updating HTML, CSS, or Material-UI:
   IF html-style.md AND css-style.md already in context:
     SKIP: Re-reading these files
     NOTE: "Using HTML/CSS style guides already in context"
@@ -47,7 +47,7 @@ IF current task involves writing or updating HTML, CSS, or TailwindCSS:
       IF current agent is Claude Code AND context-fetcher agent exists:
         USE: @agent:context-fetcher
         REQUEST: "Get HTML formatting rules from code-style/html-style.md"
-        REQUEST: "Get CSS and TailwindCSS rules from code-style/css-style.md"
+        REQUEST: "Get CSS and Material-UI rules from code-style/css-style.md"
         PROCESS: Returned style rules
       ELSE:
         READ the following style guides (only if not already in context):
