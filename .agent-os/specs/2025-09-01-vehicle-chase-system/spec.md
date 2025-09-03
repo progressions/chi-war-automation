@@ -44,6 +44,58 @@ A passenger character can use the standard AttackPanel to shoot at enemy vehicle
 - Branching chase routes or multiple paths
 - Weather effects on chase mechanics
 
+## Technical Implementation Details
+
+### Database Architecture
+
+**No new models required** - The chase system leverages existing database models:
+
+#### Vehicle Model (`vehicles` table)
+Chase data is stored in the `action_values` JSONB column:
+- `"Chase Points"` - Accumulated chase points toward victory (default: 0)
+- `"Condition Points"` - Vehicle damage/condition tracking (default: 0)
+- `"Pursuer"` - Chase role: "true" (pursuer) or "false" (evader) (default: "true")
+- `"Position"` - Gap distance: "near" or "far" (default: "far")
+- `"Acceleration"` - Speed stat for driving checks (default: 0)
+- `"Handling"` - Maneuverability modifier (default: 0)
+- `"Squeal"` - Difficulty for driving checks (default: 0)
+- `"Frame"` - Damage resistance (default: 0)
+- `"Crunch"` - Damage dealing capability (default: 0)
+
+#### Shot Model (`shots` table)
+Manages driver-vehicle relationships in fights:
+- `driver_id` - Foreign key to Shot containing the driver character
+- `driving_id` - Foreign key to Shot containing the driven vehicle
+- `vehicle_id` - Direct reference to Vehicle being driven
+- `character_id` - Direct reference to Character driving
+
+This allows tracking:
+- Which character is driving which vehicle
+- Vehicle participation in initiative order
+- Driver assignment changes during encounters
+
+#### Fight Model (existing)
+- Contains the encounter context where chases occur
+- Manages initiative countdown via shots
+- Broadcasts real-time updates via WebSocket
+
+### FS2 Chase Rules Implementation
+
+#### Victory Conditions
+- Standard vehicles: 35 chase points to win
+- Boss/Uber-Boss vehicles: 50 chase points to win
+- Either pursuer catching evader or evader escaping
+
+#### Gap Distance System
+- **Near**: Can perform Sideswipe attacks, standard combat actions
+- **Far**: Limited to driving checks and ranged attacks
+
+#### Driving Check Mechanics
+- **Check**: Vehicle Acceleration + Driver's Driving skill
+- **Difficulty**: Target vehicle's Squeal value + modifiers
+- **Success**: Gain chase points, potentially change gap distance
+- **Sideswipe**: Near position only, deals both Chase and Condition points
+
 ## Expected Deliverable
 
 1. Functional ChasePanel that allows selection of driver, target, and chase action type with real-time resolution display
