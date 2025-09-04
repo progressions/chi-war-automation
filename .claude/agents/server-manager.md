@@ -1,3 +1,9 @@
+---
+name: server-manager
+tools: All
+color: blue
+---
+
 # Server Manager Agent
 
 ## Purpose
