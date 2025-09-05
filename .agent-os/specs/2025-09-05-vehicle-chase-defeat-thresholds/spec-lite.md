@@ -1,0 +1,3 @@
+# Spec Summary (Lite)
+
+Implement vehicle chase defeat detection based on chase points exceeding driver-type-specific thresholds (Featured Foe/PC/Ally = 35, Boss/Uber Boss = 50), displaying defeat type indicators ("CRASHED" if rammed/sideswiped/weapon-damaged, "BOXED IN" otherwise) on vehicle detail blocks and generating specific fight log entries. Track damage history to determine whether vehicles crash spectacularly or are immobilized less dramatically when defeated.
