@@ -21,8 +21,10 @@ The following features have been implemented:
 - [x] Comprehensive Testing Infrastructure - RSpec (backend), Jest (frontend), Playwright (E2E) with 90%+ coverage
 - [x] **Dismissable Onboarding Modules** - User-controlled dismissal of onboarding modules with persistent state and restore functionality `S` - Completed 2025-08-31
 - [x] **Character PDF Backup Actions** - Enhanced PDF parsing to extract backup action values from character sheets during import `S` - Completed 2025-08-31
+- [x] **Vehicle Chase Defeat Thresholds** - Vehicles show "CRASHED" when defeated after being rammed or "BOXED IN" when defeated without being rammed, with defeat thresholds based on driver type (35 for PC/Featured Foe, 50 for Boss/Uber-Boss) `M` - Completed 2025-09-05
+- [x] **Image Viewer Popup System** - Full-screen modal image viewer with click-to-expand functionality for all entity images, supporting multiple dismiss methods and responsive sizing options `S` - Completed 2025-09-05
 
-## Phase 1: Enhanced Encounter Management (CURRENT - 35% Complete)
+## Phase 1: Enhanced Encounter Management (CURRENT - 75% Complete)
 
 **Goal:** Complete the encounter management system with full interface for running fights
 **Success Criteria:** Seamless combat sessions with <30s turn resolution, player satisfaction >95%
@@ -31,10 +33,10 @@ The following features have been implemented:
 
 - [x] **Enhanced Shot Counter Display** - ShotCounter component with character grouping by shot value, wound indicators, and character type distinctions `L` - **COMPLETE**: Core display features already implemented
 - [x] **Basic Wound Tracking System** - Health and wound state tracking with visual indicators on character cards `M` - **COMPLETE**: Wounds are displayed and tracked in current UI
-- [ ] **Attack & Damage Resolution Interface** - Complete gamemaster interface for resolving attacks, applying damage, and managing combat actions with manual overrides `XL` - **IN PROGRESS**: Core framework exists, needs attack panel and damage application UI
-- [ ] **CRITICAL: Impairment Display & Calculation System** - Automatic calculation and prominent display of wound-based combat penalties for all character types with real-time updates `L` - **NEW REQUIREMENT**: Display impairment levels prominently throughout interface, automatically subtract from Attack/Defense values, color-coded indicators (green/yellow/red), different thresholds per character type
-- [ ] **CRITICAL: Boost Actions System** - Tactical team support mechanics allowing characters to enhance allies' attack (+1/+2) or defense (+3/+5) capabilities with 3-shot cost and automatic expiration `M` - **NEW REQUIREMENT**: BoostPanel component, target selection, Fortune die enhancement, visual indicators, integration with attack calculations
-- [ ] **Character Health & State Management** - Real-time health, wound penalties, and impairment calculation system for all participant types `L` - **PARTIAL**: Basic tracking exists, needs impairment effects calculation
+- [x] **Boost Actions System** - Tactical team support mechanics allowing characters to enhance allies' attack (+1/+2) or defense (+3/+5) capabilities with 3-shot cost and automatic expiration `M` - **COMPLETE**: Full boost system implemented with Fortune die enhancement, visual indicators, and integration with attack calculations
+- [x] **Attack & Damage Resolution Interface** - Complete gamemaster interface for resolving attacks, applying damage, and managing combat actions with manual overrides `XL` - **COMPLETE**: AttackPanel component implemented with comprehensive damage application UI
+- [x] **CRITICAL: Impairment Display & Calculation System** - Automatic calculation and prominent display of wound-based combat penalties for all character types with real-time updates `L` - **COMPLETE**: ImpairmentBadge component and calculation system implemented throughout interface with color-coded indicators and automatic value adjustments
+- [x] **Character Health & State Management** - Real-time health, wound penalties, and impairment calculation system for all participant types `L` - **COMPLETE**: Comprehensive health tracking with impairment effects calculation
 - [ ] **Player Combat Interface** - Dedicated player interface for managing character actions, rolling dice, and tracking personal stats during encounters `L`
 - [ ] **Advanced Initiative System** - Enhanced shot management with automatic next-action calculation, sequence transitions, and turn announcements `M` - **PARTIAL**: Basic shot counter exists, needs sequence management
 - [ ] **Combat Action Resolution** - Streamlined action declaration, dice rolling, and result application system `L`
@@ -45,9 +47,9 @@ The following features have been implemented:
 ### Critical Integration Requirements
 
 The **Boost Actions** and **Impairment Display** systems must integrate with:
-- **AttackPanel component** for automatic calculation of final attack/defense values
-- **ShotCounter component** for displaying boost and impairment status on character cards
-- **Combat API endpoints** for boost application, expiration tracking, and impairment calculations
+- **AttackPanel component** for automatic calculation of final attack/defense values ✓
+- **ShotCounter component** for displaying boost and impairment status on character cards ✓
+- **Combat API endpoints** for boost application, expiration tracking, and impairment calculations ✓
 - **Real-time WebSocket events** for boost status changes and impairment updates
 - **Mobile Player Interface** for boost action buttons and impairment indicators
 - **Combat Log** for tracking boost actions and impairment changes
@@ -59,10 +61,10 @@ The **Boost Actions** and **Impairment Display** systems must integrate with:
 - Real-time update system foundation ✓
 
 **Updated Progress Assessment:**
-- **Foundation Complete**: Shot counter, wound display, character type distinctions, grouping by shot
-- **Architecture Correct**: PC wounds on Character model, NPC wounds on Shot model - no migration needed
-- **Next Priority**: Attack interface, damage application API, **impairment effects calculation**, **boost actions implementation**
-- **Estimated Completion**: ~65% of core display functionality complete, ~25% of interaction features complete
+- **Foundation Complete**: Shot counter, wound display, character type distinctions, grouping by shot, boost actions system ✓
+- **Architecture Correct**: PC wounds on Character model, NPC wounds on Shot model - no migration needed ✓
+- **Core Components Complete**: AttackPanel, ImpairmentBadge, damage application interface ✓
+- **Estimated Completion**: ~90% of core display functionality complete, ~60% of interaction features complete
 
 ## Phase 2: Advanced Features & Integration
 

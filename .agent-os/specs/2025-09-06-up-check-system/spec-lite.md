@@ -1,0 +1,3 @@
+# Spec Summary (Lite)
+
+Implement an Up Check system that triggers when PC characters exceed their wound threshold, requiring them to make a Toughness-based check to stay active in combat. Players roll Swerve + Toughness (target 5+) to determine if their character remains "Up" or goes "Out of the fight", with optional Fortune point usage for extra dice. The system supports custom wound thresholds for special archetypes like the Big Bruiser (50 instead of 35).

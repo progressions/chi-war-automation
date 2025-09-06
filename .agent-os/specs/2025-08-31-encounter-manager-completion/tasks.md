@@ -1,7 +1,7 @@
 # Encounter Manager Implementation Tasks
 
 > Created: 2025-08-31
-> Status: In Progress - Phase 1 Partially Complete
+> Status: In Progress - Phase 1 Largely Complete (75%)
 > Size: XL (4-6 weeks)
 
 ## Overview
@@ -47,92 +47,92 @@ Implement a comprehensive encounter management system for running Feng Shui 2 ta
 
 **Note**: Removed requirement for wounds column on shots table - current architecture correctly stores PC wounds on Character records and NPC wounds on Shot records.
 
-### Task 1.2: Attack Interface Component
-- [ ] Create `AttackPanel.tsx` component with Material-UI
-  - Attacker selection dropdown (characters at current shot)
-  - Attack skill radio buttons with override text fields
-  - Weapon selection dropdown with damage override
-  - **Weapon attribute display and integration**:
-    - **Mook Bonus**: Display and apply bonus to attack rolls when attacking mook-type characters
-    - **Ka-chunk**: Display option to spend extra shot for attack bonus, with checkbox/toggle
-    - Show weapon attributes clearly in weapon selection dropdown
-    - Apply attribute bonuses to attack calculation automatically
-    - Allow manual override of all weapon-based bonuses
-  - Stunt checkbox (+2 DV modifier)
-  - Target selection with current defense values
-  - **CRITICAL: Impairment display and calculation**:
-    - **Show attacker's impairment level prominently with color-coded indicator**
-    - **Display base Attack Value and adjusted value (AV - impairment)**
-    - **Show target's impairment level and adjusted Defense Value**
-    - **Use clear format: "AV 15 (-1) = 14" for impaired values**
-    - **Color-code impairment indicators: green (0), yellow (1), red (2+)**
-    - **Real-time updates when wounds change during combat**
-  - **Active boost integration**:
-    - **Display active attack boosts on attacker (+1 or +2)**
-    - **Display active defense boosts on target (+3 or +5)**
-    - **Include boost values in final calculation breakdown**
-    - **Show boost expiration timing**
-- [ ] Implement dodge action button
-  - Quick action to spend 1 shot for +3 Defense
-  - Update shot value and defense in real-time
-- [ ] Add physical dice support
-  - Text field for entering Swerve from table dice
-  - Optional digital dice roller component
-  - Direct entry option for final results
-- [ ] Create damage calculation display
-  - Show suggested damage with formula
-  - Include weapon attribute bonuses in damage calculation
-  - Manual override field for final damage
-  - Apply button with confirmation
-  - **Show how damage will affect target's impairment level**
+### Task 1.2: Attack Interface Component ✅ COMPLETE
+- [x] ~~Create `AttackPanel.tsx` component with Material-UI~~ **COMPLETE** - AttackPanel component implemented with comprehensive attack resolution interface
+  - [x] ~~Attacker selection dropdown (characters at current shot)~~ **COMPLETE**
+  - [x] ~~Attack skill radio buttons with override text fields~~ **COMPLETE**
+  - [x] ~~Weapon selection dropdown with damage override~~ **COMPLETE**
+  - [x] ~~**Weapon attribute display and integration**:~~ **COMPLETE**
+    - [x] ~~**Mook Bonus**: Display and apply bonus to attack rolls when attacking mook-type characters~~ **COMPLETE**
+    - [x] ~~**Ka-chunk**: Display option to spend extra shot for attack bonus, with checkbox/toggle~~ **COMPLETE**
+    - [x] ~~Show weapon attributes clearly in weapon selection dropdown~~ **COMPLETE**
+    - [x] ~~Apply attribute bonuses to attack calculation automatically~~ **COMPLETE**
+    - [x] ~~Allow manual override of all weapon-based bonuses~~ **COMPLETE**
+  - [x] ~~Stunt checkbox (+2 DV modifier)~~ **COMPLETE**
+  - [x] ~~Target selection with current defense values~~ **COMPLETE**
+  - [x] ~~**CRITICAL: Impairment display and calculation**:~~ **COMPLETE**
+    - [x] ~~**Show attacker's impairment level prominently with color-coded indicator**~~ **COMPLETE**
+    - [x] ~~**Display base Attack Value and adjusted value (AV - impairment)**~~ **COMPLETE**
+    - [x] ~~**Show target's impairment level and adjusted Defense Value**~~ **COMPLETE**
+    - [x] ~~**Use clear format: "AV 15 (-1) = 14" for impaired values**~~ **COMPLETE**
+    - [x] ~~**Color-code impairment indicators: green (0), yellow (1), red (2+)**~~ **COMPLETE**
+    - [x] ~~**Real-time updates when wounds change during combat**~~ **COMPLETE**
+  - [x] ~~**Active boost integration**:~~ **COMPLETE**
+    - [x] ~~**Display active attack boosts on attacker (+1 or +2)**~~ **COMPLETE**
+    - [x] ~~**Display active defense boosts on target (+3 or +5)**~~ **COMPLETE**
+    - [x] ~~**Include boost values in final calculation breakdown**~~ **COMPLETE**
+    - [x] ~~**Show boost expiration timing**~~ **COMPLETE**
+- [x] ~~Implement dodge action button~~ **COMPLETE**
+  - [x] ~~Quick action to spend 1 shot for +3 Defense~~ **COMPLETE**
+  - [x] ~~Update shot value and defense in real-time~~ **COMPLETE**
+- [x] ~~Add physical dice support~~ **COMPLETE**
+  - [x] ~~Text field for entering Swerve from table dice~~ **COMPLETE**
+  - [x] ~~Optional digital dice roller component~~ **COMPLETE**
+  - [x] ~~Direct entry option for final results~~ **COMPLETE**
+- [x] ~~Create damage calculation display~~ **COMPLETE**
+  - [x] ~~Show suggested damage with formula~~ **COMPLETE**
+  - [x] ~~Include weapon attribute bonuses in damage calculation~~ **COMPLETE**
+  - [x] ~~Manual override field for final damage~~ **COMPLETE**
+  - [x] ~~Apply button with confirmation~~ **COMPLETE**
+  - [x] ~~**Show how damage will affect target's impairment level**~~ **COMPLETE**
 
-### Task 1.3: Boost Actions System
-- [ ] Create `BoostPanel.tsx` component
-  - Boosting character selection (characters at current shot)
-  - Target character selection dropdown
-  - Boost type selection:
-    - **Attack Boost: +1 to target's next attack (+2 with Fortune die)**
-    - **Defense Boost: +3 to Defense for all attacks in next shot (+5 with Fortune die)**
-  - Fortune die checkbox for enhanced boost effects
-  - 3-shot cost display and confirmation
-  - Clear duration/expiration indicator
-  - **Show target's current impairment to help with boost decisions**
-  - **Display calculated final values after boost application**
-- [ ] Integrate boost display in shot counter
-  - Show active boosts on character cards
-  - Visual indicators for boosted characters
-  - Expiration countdown (shots remaining)
-  - Color coding for boost types (attack vs defense)
-  - **Combine boost indicators with impairment display**
-- [ ] Add boost calculation to AttackPanel
-  - Apply active attack boosts to calculated attack values
-  - Apply active defense boosts to target defense values
-  - Show boost contribution in calculation breakdown
-  - Auto-expire boosts after relevant action
-  - **Factor boosts into final attack/defense values alongside impairment**
+### Task 1.3: Boost Actions System ✅ COMPLETE
+- [x] ~~Create `BoostPanel.tsx` component~~ **COMPLETE** - BoostPanel component fully implemented
+  - [x] ~~Boosting character selection (characters at current shot)~~ **COMPLETE**
+  - [x] ~~Target character selection dropdown~~ **COMPLETE**
+  - [x] ~~Boost type selection:~~ **COMPLETE**
+    - [x] ~~**Attack Boost: +1 to target's next attack (+2 with Fortune die)**~~ **COMPLETE**
+    - [x] ~~**Defense Boost: +3 to Defense for all attacks in next shot (+5 with Fortune die)**~~ **COMPLETE**
+  - [x] ~~Fortune die checkbox for enhanced boost effects~~ **COMPLETE**
+  - [x] ~~3-shot cost display and confirmation~~ **COMPLETE**
+  - [x] ~~Clear duration/expiration indicator~~ **COMPLETE**
+  - [x] ~~**Show target's current impairment to help with boost decisions**~~ **COMPLETE**
+  - [x] ~~**Display calculated final values after boost application**~~ **COMPLETE**
+- [x] ~~Integrate boost display in shot counter~~ **COMPLETE**
+  - [x] ~~Show active boosts on character cards~~ **COMPLETE**
+  - [x] ~~Visual indicators for boosted characters~~ **COMPLETE**
+  - [x] ~~Expiration countdown (shots remaining)~~ **COMPLETE**
+  - [x] ~~Color coding for boost types (attack vs defense)~~ **COMPLETE**
+  - [x] ~~**Combine boost indicators with impairment display**~~ **COMPLETE**
+- [x] ~~Add boost calculation to AttackPanel~~ **COMPLETE**
+  - [x] ~~Apply active attack boosts to calculated attack values~~ **COMPLETE**
+  - [x] ~~Apply active defense boosts to target defense values~~ **COMPLETE**
+  - [x] ~~Show boost contribution in calculation breakdown~~ **COMPLETE**
+  - [x] ~~Auto-expire boosts after relevant action~~ **COMPLETE**
+  - [x] ~~**Factor boosts into final attack/defense values alongside impairment**~~ **COMPLETE**
 
-### Task 1.4: Wound & Impairment Tracking
+### Task 1.4: Wound & Impairment Tracking ✅ COMPLETE
 - [x] ~~Update Shot model with wound/impairment logic~~ **COMPLETE** - Architecture already correct with PC wounds on Character, NPC wounds on Shot
 - [x] ~~Create wound display component~~ **COMPLETE** - Wounds are already displayed in the UI on character cards
 - [x] ~~Visual health indicators~~ **COMPLETE** - Wound indicators are already implemented and visible
-- [ ] **CRITICAL: Implement enhanced impairment effects**
-  - **Auto-calculate AV/DV penalties based on wound thresholds for all character types**
-  - **Display impairment level prominently on all character cards with color-coded badges**
-  - **Show both base and adjusted values in attack/defense calculations: "AV 15 (-1) = 14"**
-  - **Color-code impairment levels: green (0), yellow (1), red (2+)**
-  - **Real-time impairment updates as wounds change**
-  - **Different thresholds for PC/NPC (30/35), Boss (50+), Uber-Boss (60+), Mook (none)**
+- [x] ~~**CRITICAL: Implement enhanced impairment effects**~~ **COMPLETE** - ImpairmentBadge component and calculation system fully implemented
+  - [x] ~~**Auto-calculate AV/DV penalties based on wound thresholds for all character types**~~ **COMPLETE**
+  - [x] ~~**Display impairment level prominently on all character cards with color-coded badges**~~ **COMPLETE**
+  - [x] ~~**Show both base and adjusted values in attack/defense calculations: "AV 15 (-1) = 14"**~~ **COMPLETE**
+  - [x] ~~**Color-code impairment levels: green (0), yellow (1), red (2+)**~~ **COMPLETE**
+  - [x] ~~**Real-time impairment updates as wounds change**~~ **COMPLETE**
+  - [x] ~~**Different thresholds for PC/NPC (30/35), Boss (50+), Uber-Boss (60+), Mook (none)**~~ **COMPLETE**
 - [ ] Add Up Check system for 35+ wounds
   - Prompt for Constitution check
   - Track check results in combat log
-- [ ] Create impairment calculation utilities
-  - Calculate impairment from wound count and character type
-  - Apply impairment to attack and defense values automatically
-  - Provide clear visual indicators for impaired values
-  - Include impairment in all combat calculations
-  - **Integration with boost actions for combined effect calculations**
+- [x] ~~Create impairment calculation utilities~~ **COMPLETE** - CharacterEffectService and SharedService provide comprehensive impairment calculations
+  - [x] ~~Calculate impairment from wound count and character type~~ **COMPLETE**
+  - [x] ~~Apply impairment to attack and defense values automatically~~ **COMPLETE**
+  - [x] ~~Provide clear visual indicators for impaired values~~ **COMPLETE**
+  - [x] ~~Include impairment in all combat calculations~~ **COMPLETE**
+  - [x] ~~**Integration with boost actions for combined effect calculations**~~ **COMPLETE**
 
-**Status**: Largely complete - the basic wound tracking and display system is already functional. Enhanced impairment display needed.
+**Status**: Attack interface, boost actions, and impairment display systems are fully implemented and functional.
 
 ## Phase 2: Enhanced Shot Counter (Week 2)
 
@@ -167,12 +167,12 @@ Implement a comprehensive encounter management system for running Feng Shui 2 ta
   - Override fields for all values
   - "Roll All NPCs" batch action
   - Apply initiatives and start sequence
-- [ ] **CRITICAL: Enhanced impairment display in shot counter**
-  - **Show impairment level prominently on each character card with colored badges**
-  - **Display both base and adjusted AV/DV values: "Guns 15 (-1) = 14"**
-  - **Use clear visual indicators (badges, color coding) for impairment levels**
-  - **Update impairment in real-time as wounds change**
-  - **Integrate with boost status display for complete character state**
+- [x] ~~**CRITICAL: Enhanced impairment display in shot counter**~~ **COMPLETE** - ImpairmentBadge integrated throughout shot counter
+  - [x] ~~**Show impairment level prominently on each character card with colored badges**~~ **COMPLETE**
+  - [x] ~~**Display both base and adjusted AV/DV values: "Guns 15 (-1) = 14"**~~ **COMPLETE**
+  - [x] ~~**Use clear visual indicators (badges, color coding) for impairment levels**~~ **COMPLETE**
+  - [x] ~~**Update impairment in real-time as wounds change**~~ **COMPLETE**
+  - [x] ~~**Integrate with boost status display for complete character state**~~ **COMPLETE**
 
 **Status**: Core grouping and display features are complete, enhanced interaction features remain.
 
@@ -204,12 +204,12 @@ Implement a comprehensive encounter management system for running Feng Shui 2 ta
   - Previous Shot (undo)
   - Jump to Shot
   - Show/Hide hidden characters
-- [ ] **CRITICAL: Add boost status tracking**
-  - **Track active boosts on characters with visual indicators**
-  - **Auto-expire boosts after relevant actions**
-  - **Visual indicators for boosted characters in shot counter**
-  - **Include boost effects in all calculations**
-  - **Combine boost and impairment displays effectively**
+- [x] ~~**CRITICAL: Add boost status tracking**~~ **COMPLETE** - Boost tracking fully implemented
+  - [x] ~~**Track active boosts on characters with visual indicators**~~ **COMPLETE**
+  - [x] ~~**Auto-expire boosts after relevant actions**~~ **COMPLETE**
+  - [x] ~~**Visual indicators for boosted characters in shot counter**~~ **COMPLETE**
+  - [x] ~~**Include boost effects in all calculations**~~ **COMPLETE**
+  - [x] ~~**Combine boost and impairment displays effectively**~~ **COMPLETE**
 
 ### Task 2.3: Real-time Updates
 - [ ] Enhance ActionCable broadcasting
@@ -465,9 +465,9 @@ Implement a comprehensive encounter management system for running Feng Shui 2 ta
 - [ ] Players can participate via mobile devices
 - [ ] Real-time updates under 500ms
 - [ ] Handles 6+ participants smoothly
-- [ ] **Combat log tracks all actions including boost actions and impairment changes**
-- [ ] **Impairment calculations automatically applied throughout interface with clear visual indicators**
-- [ ] **Boost actions provide tactical team support options with clear UI and expiration tracking**
+- [x] ~~**Combat log tracks all actions including boost actions and impairment changes**~~ **COMPLETE**: Combat logging system tracks all combat events
+- [x] ~~**Impairment calculations automatically applied throughout interface with clear visual indicators**~~ **COMPLETE**: ImpairmentBadge system provides comprehensive impairment display
+- [x] ~~**Boost actions provide tactical team support options with clear UI and expiration tracking**~~ **COMPLETE**: BoostPanel and boost integration fully implemented
 - [ ] Discord integration for hybrid play
 - [ ] (Stretch) 3D dice provide engaging visual feedback
 
@@ -522,15 +522,15 @@ end
 ### Key Material-UI Components to Use
 - `Autocomplete` for character/target selection
 - `TextField` with InputAdornment for override fields
-- **`Chip` for status effects, impairment levels, and boost indicators**
+- **`Chip` for status effects, impairment levels, and boost indicators** ✅
 - `LinearProgress` for health bars
 - `SpeedDial` for quick actions
 - `Drawer` for attack panel and boost panel
 - `Snackbar` for notifications
 - `Card` for character cards in shot counter
 - `Checkbox` for weapon attribute toggles (ka-chunk)
-- **`Badge` for impairment and boost indicators**
-- **`Tooltip` for impairment calculation explanations and boost details**
+- **`Badge` for impairment and boost indicators** ✅
+- **`Tooltip` for impairment calculation explanations and boost details** ✅
 
 ### WebSocket Events to Implement
 ```javascript
@@ -550,9 +550,9 @@ EncounterChannel - All participants
 PlayerChannel - Individual player updates
 ```
 
-### Impairment Calculation Logic
+### Impairment Calculation Logic ✅ COMPLETE
 ```javascript
-// Frontend utility function
+// Frontend utility function - IMPLEMENTED in CharacterEffectService
 function calculateImpairment(wounds, characterType) {
   if (characterType === 'mook') return 0; // Mooks don't take impairment
   
@@ -583,9 +583,9 @@ function applyImpairment(baseValue, impairment) {
 }
 ```
 
-### Boost Action Integration
+### Boost Action Integration ✅ COMPLETE
 ```javascript
-// Combined boost and impairment effect calculation
+// Combined boost and impairment effect calculation - IMPLEMENTED in AttackPanel
 function calculateFinalAttackValue(character, weapon, activeBoosts = {}) {
   const impairment = calculateImpairment(character.wounds, character.character_type);
   
@@ -634,7 +634,7 @@ function calculateFinalDefenseValue(character, activeBoosts = {}, situationalMod
 
 This specification now emphasizes two critical combat mechanics:
 
-### 1. Boost Actions (Tactical Team Support)
+### 1. Boost Actions (Tactical Team Support) ✅ COMPLETE
 - **3-shot cost** for meaningful tactical decisions
 - **Attack Boost**: +1 to next attack (+2 with Fortune die)
 - **Defense Boost**: +3 to Defense for next shot (+5 with Fortune die)
@@ -642,7 +642,7 @@ This specification now emphasizes two critical combat mechanics:
 - **Automatic expiration** after relevant action
 - **Cannot self-boost** to prevent exploitation
 
-### 2. Impairment Display & Automatic Calculation
+### 2. Impairment Display & Automatic Calculation ✅ COMPLETE
 - **Prominent visual indicators** for impairment levels
 - **Automatic calculation** based on wound count and character type
 - **Real-time updates** throughout the interface
