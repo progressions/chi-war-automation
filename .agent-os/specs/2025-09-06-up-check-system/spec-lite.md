@@ -1,0 +1,3 @@
+# Spec Summary (Lite)
+
+Implement an Up Check system that triggers when player characters exceed their wound threshold (35 wounds), requiring them to roll Swerve + Fortune + Toughness >= 5 to stay in combat or be marked as "out_of_fight". The feature includes automatic Mark of Death incrementation in action_values, a dedicated Up Check panel matching existing combat UI patterns, and a new character status field for tracking combat states.
