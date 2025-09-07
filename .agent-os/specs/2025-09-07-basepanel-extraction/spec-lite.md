@@ -1,0 +1,3 @@
+# Spec Summary (Lite)
+
+Extract the common Paper box structure with rounded edges and 2px colored border from CheeseItPanel and SpeedCheckPanel into a reusable BasePanel component. This two-level architecture (BasePanel → individual panels) will eliminate duplicate layout code while maintaining the existing visual appearance. Initial migration focuses only on CheeseItPanel and SpeedCheckPanel to validate the approach before expanding to other encounter panels.
