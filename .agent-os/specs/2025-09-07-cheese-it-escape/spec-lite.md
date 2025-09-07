@@ -1,0 +1,3 @@
+# Spec Summary (Lite)
+
+Implement an escape mechanism allowing ALL characters (regardless of type) to attempt fleeing from combat using the character.status field. Characters can click "Cheese It" to spend 3 shots (2 for Boss/Uber-Boss) and enter "cheesing_it" status. Characters acting after them in shot order get one chance to prevent escape by manually entering Swerve (and Fortune for PCs) where Speed + Swerve + Fortune must >= escaper's Speed. Failed prevention grants "cheesed_it" status (escaped but still visible), successful prevention removes "cheesing_it" status.
