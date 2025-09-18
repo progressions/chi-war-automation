@@ -10,3 +10,6 @@
 [submodule "legacy-client"]
 	path = legacy-client
 	url = https://github.com/progressions/shot-client.git
+[submodule "shot-elixir"]
+	path = shot-elixir
+	url = git@github.com:progressions/shot-server-elixir.git
