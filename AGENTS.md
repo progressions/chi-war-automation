@@ -1,41 +1,30 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `shot-client-next/`: Next.js (TypeScript) web client. Source in `src/`; tests in `src/**/__tests__/`; Playwright config in `playwright.config.ts`.
-- `shot-server/`: Ruby on Rails API. App code in `app/`; tests in `spec/` (RSpec); migrations in `db/migrate/`.
-- `legacy-client/`: Archived client; avoid new work here.
-- Root testing helpers: Playwright script(s) and runner in `/` with `package.json` for quick e2e.
-- Other: `issues/` (work notes), `specs/` (requirements), `blogs/`, `test-scripts/`.
+- `shot-client-next/`: Next.js TypeScript client. App code lives in `src/`; colocated unit tests sit in `src/**/__tests__/`. Playwright config and scripts reside at the root (`playwright.config.ts`).
+- `shot-server/`: Ruby on Rails API with domain logic under `app/`, specs in `spec/`, and database migrations in `db/migrate/`.
+- Archive and reference materials (`legacy-client/`, `issues/`, `specs/`, `blogs/`, `test-scripts/`) are read-only unless explicitly tasked.
 
 ## Build, Test, and Development Commands
-- Client (from `shot-client-next/`):
-  - `npm install` — install deps.
-  - `npm run dev` — start Next.js dev server on port 3001.
-  - `npm run build && npm start` — production build and start.
-  - `npm test` / `npm run test:watch` / `npm run test:coverage` — unit tests (Jest).
-  - `npm run e2e` / `npm run e2e:ui` — Playwright e2e.
-- Server (from `shot-server/`):
-  - `bundle install` — install gems.
-  - `bin/rails db:setup` — create, migrate, seed.
-  - `bin/rails s` — start API server.
-  - `bundle exec rspec` — run RSpec suite.
-- Root quick test (from repo root): `npm test` or `npm run test:headless` — runs Playwright flow in headless mode.
+- Client setup: `cd shot-client-next && npm install` installs dependencies.
+- Client dev: `npm run dev` (port 3001) for live reload; production via `npm run build && npm start`.
+- Client tests: `npm test` for Jest suites; `npm run e2e` or `npm run e2e:ui` for Playwright.
+- Server setup: `cd shot-server && bundle install`, then `bin/rails db:setup` to provision the database.
+- Server runtime: `bin/rails s` launches the API; `bundle exec rspec` runs the spec suite.
+- Root quick regression: `npm test` executes the headless Playwright smoke run.
 
 ## Coding Style & Naming Conventions
-- Client: TypeScript, 2‑space indent. Use Prettier and ESLint:
-  - `npm run format`, `npm run lint`, or `./fix-lint.sh`.
-  - Components: `PascalCase.tsx`; services: `PascalCase.ts` (e.g., `src/services/VehicleService.ts`).
-- Server: Ruby, 2‑space indent, idiomatic Rails structure. Prefer service/poros for domain logic when appropriate.
+- TypeScript/React: 2-space indent, components in `PascalCase.tsx`, services in `PascalCase.ts`. Format with `npm run format` or `npm run lint`.
+- Ruby: idiomatic Rails conventions with 2-space indent. Prefer POROs/services for complex domain behavior.
+- Keep secrets in `shot-client-next/.env.*` and Rails credentials; do not commit sensitive values.
 
 ## Testing Guidelines
-- Client: Jest + Testing Library; files in `__tests__` with `*.test.ts(x)`. Aim for meaningful unit coverage; add Playwright e2e for user flows.
-- Server: RSpec; specs in `spec/**/*_spec.rb`. Use factories/fixtures as needed; keep specs fast and deterministic.
-- CI: Prefer `npm run test:ci` (client) and `bundle exec rspec` (server) in pipelines.
+- Jest + Testing Library for client unit tests; name files `*.test.ts(x)` inside `__tests__/` folders.
+- Playwright handles regression and UI verification via `npm run e2e` (headless) or `npm run e2e:ui` (interactive).
+- Server specs rely on RSpec factories; ensure tests remain deterministic and reset state via fixtures or factories.
+- Aim to document coverage or e2e notes when updating critical flows.
 
 ## Commit & Pull Request Guidelines
-- Commits: Imperative present tense; scope prefix recommended, e.g. `client: fix dice roll lag`, `server: add index on shots`.
-- PRs: Clear description, linked issue, screenshots for UI, reproduction steps, and test notes. Include migration/backfill details when touching `db/migrate/`.
-
-## Security & Configuration Tips
-- Client env: `.env.local`, `.env.test`, `.env.production` in `shot-client-next/` (do not commit secrets).
-- Server env: manage via Rails env/credentials; rotate keys and avoid committing dumps.
+- Use comprehensive, detailed commit messages with examples and outlines of files changed
+- PRs should link relevant issues, explain reproduction/setup, list executed tests, and include UI screenshots when applicable.
+- Flag migrations or backfills in the PR description and coordinate deployments when schema changes ship.
