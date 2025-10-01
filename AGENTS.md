@@ -1,33 +1,30 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `shot-client-next/`: Next.js TypeScript client; app source under `src/`, unit tests in `src/**/__tests__/`, Playwright config in `playwright.config.ts`.
-- `shot-server/`: Ruby on Rails API; core code in `app/`, specs in `spec/`, migrations in `db/migrate/`.
-- Legacy and reference materials live in `legacy-client/`, `issues/`, `specs/`, `blogs/`, and `test-scripts/`; avoid new work in archived areas unless explicitly tasked.
+- `shot-client-next/`: Next.js TypeScript client. App code lives in `src/`; colocated unit tests sit in `src/**/__tests__/`. Playwright config and scripts reside at the root (`playwright.config.ts`).
+- `shot-server/`: Ruby on Rails API with domain logic under `app/`, specs in `spec/`, and database migrations in `db/migrate/`.
+- Archive and reference materials (`legacy-client/`, `issues/`, `specs/`, `blogs/`, `test-scripts/`) are read-only unless explicitly tasked.
 
 ## Build, Test, and Development Commands
-- Client setup: `cd shot-client-next && npm install` to install dependencies.
-- Client dev server: `npm run dev` (port 3001); production: `npm run build && npm start`.
-- Client tests: `npm test` (Jest), `npm run e2e` / `npm run e2e:ui` (Playwright).
-- Server setup: `cd shot-server && bundle install`, then `bin/rails db:setup` for DB prep.
-- Server runtime: `bin/rails s`; specs: `bundle exec rspec`.
-- Root quick flow: run `npm test` for headless Playwright regression.
+- Client setup: `cd shot-client-next && npm install` installs dependencies.
+- Client dev: `npm run dev` (port 3001) for live reload; production via `npm run build && npm start`.
+- Client tests: `npm test` for Jest suites; `npm run e2e` or `npm run e2e:ui` for Playwright.
+- Server setup: `cd shot-server && bundle install`, then `bin/rails db:setup` to provision the database.
+- Server runtime: `bin/rails s` launches the API; `bundle exec rspec` runs the spec suite.
+- Root quick regression: `npm test` executes the headless Playwright smoke run.
 
 ## Coding Style & Naming Conventions
-- TypeScript/React uses 2-space indent, components in `PascalCase.tsx`, services in `PascalCase.ts`.
-- Ruby follows idiomatic Rails with 2-space indent; prefer POROs/services for domain logic.
-- Enforce formatting with `npm run format`, `npm run lint`, or `./fix-lint.sh` (client).
+- TypeScript/React: 2-space indent, components in `PascalCase.tsx`, services in `PascalCase.ts`. Format with `npm run format` or `npm run lint`.
+- Ruby: idiomatic Rails conventions with 2-space indent. Prefer POROs/services for complex domain behavior.
+- Keep secrets in `shot-client-next/.env.*` and Rails credentials; do not commit sensitive values.
 
 ## Testing Guidelines
-- Client unit tests use Jest + Testing Library; name files `*.test.ts(x)` under `__tests__/`.
-- Server tests rely on RSpec; keep specs deterministic and leverage factories.
-- CI expectations: `npm run test:ci` for client, `bundle exec rspec` for server; add coverage or e2e notes when applicable.
+- Jest + Testing Library for client unit tests; name files `*.test.ts(x)` inside `__tests__/` folders.
+- Playwright handles regression and UI verification via `npm run e2e` (headless) or `npm run e2e:ui` (interactive).
+- Server specs rely on RSpec factories; ensure tests remain deterministic and reset state via fixtures or factories.
+- Aim to document coverage or e2e notes when updating critical flows.
 
 ## Commit & Pull Request Guidelines
-- Commits use imperative, scoped prefixes (e.g., `client: add form validation`, `server: add index on shots`).
-- PRs should link issues, outline reproduction/setup, include screenshots for UI, and note migrations/backfills.
-- Document test evidence in PR descriptions (`npm test`, `bundle exec rspec`, or Playwright runs) to streamline review.
-
-## Security & Configuration Tips
-- Keep client environment secrets in `shot-client-next/.env.*`; never commit sensitive values.
-- Manage server credentials via Rails environments; rotate keys regularly and avoid dumping secrets into version control.
+- Use comprehensive, detailed commit messages with examples and outlines of files changed
+- PRs should link relevant issues, explain reproduction/setup, list executed tests, and include UI screenshots when applicable.
+- Flag migrations or backfills in the PR description and coordinate deployments when schema changes ship.
