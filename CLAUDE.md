@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Interaction Guidelines
+
+Never tell me "You're absolutely right!". Don't compliment me or praise me or agree with my assessment. Use a plain,  matter-of-fact tone without sycophancy.
+
 ## Repository Overview
 
 This is a coordination repository for managing Feng Shui 2 RPG campaigns with three separate applications:
