@@ -8,28 +8,43 @@ Never tell me "You're absolutely right!". Don't compliment me or praise me or ag
 
 ## Repository Overview
 
-This is a coordination repository for managing Feng Shui 2 RPG campaigns with three separate applications:
-- **shot-server**: Ruby on Rails 8.0 API backend (port 3000) - separate git repository
-- **shot-client-next**: Next.js 15.4 frontend (port 3001) - separate git repository, current main frontend
-- **legacy-client**: Original Next.js frontend - calls API v1 endpoints, maintained for backward compatibility
+This is a coordination repository for managing Feng Shui 2 RPG campaigns with two primary applications:
+- **shot-elixir**: Elixir/Phoenix 1.8 API backend (port 4002) - separate git repository, **production backend**
+- **shot-client-next**: Next.js 15.4 frontend (port 3001) - separate git repository, **production frontend**
+
+### Production Stack
+
+**Live at https://chiwar.net**
+
+```
+chiwar.net → shot-client-phoenix (Next.js on Fly.io) → shot-elixir (Phoenix on Fly.io) → shot-counter-db (PostgreSQL on Fly.io)
+```
+
+| Component | Technology | Fly.io App | Purpose |
+|-----------|------------|------------|---------|
+| Frontend | Next.js 15.4 | shot-client-phoenix | React UI served at chiwar.net |
+| Backend | Phoenix 1.8 / Elixir | shot-elixir | REST API + WebSocket channels |
+| Database | PostgreSQL | shot-counter-db | Shared database with UUID primary keys |
+
+### Legacy Applications (Deprecated)
+
+The following are no longer in production but may exist locally for reference:
+- **shot-server**: Ruby on Rails 8.0 API backend - **deprecated**, replaced by shot-elixir
+- **legacy-client**: Original Next.js frontend - **deprecated**
 
 ### Directory Structure
 
 ```
 chi-war/                          # Root coordination repository
 ├── create-invitation.sh          # Quick script to generate test invitations (./create-invitation.sh [email])
-├── shot-server/                  # Rails API backend (separate git repo, gitignored)
-│   ├── app/                      # Rails application code
-│   │   ├── controllers/          # API controllers (v1, v2)
-│   │   ├── models/               # Active Record models
-│   │   ├── serializers/          # JSON response formatting
-│   │   ├── services/             # Business logic services
-│   │   ├── jobs/                 # Background job processing
-│   │   └── channels/             # WebSocket channels
-│   ├── config/                   # Rails configuration
-│   ├── db/                       # Database migrations and seeds
-│   ├── spec/                     # RSpec test suite
-│   └── CLAUDE.md                 # Rails-specific documentation
+├── shot-elixir/                  # Phoenix API backend (separate git repo, gitignored)
+│   ├── lib/                      # Elixir application code
+│   │   ├── shot_elixir/          # Business logic, schemas, services
+│   │   └── shot_elixir_web/      # Controllers, views, channels, router
+│   ├── config/                   # Phoenix configuration
+│   ├── priv/                     # Static assets and migrations
+│   ├── test/                     # ExUnit test suite
+│   └── CLAUDE.md                 # Phoenix-specific documentation
 ├── shot-client-next/             # Next.js frontend (separate git repo, gitignored)
 │   ├── src/                      # Source code
 │   │   ├── app/                  # Next.js App Router pages
@@ -41,15 +56,7 @@ chi-war/                          # Root coordination repository
 │   │   └── types/                # TypeScript type definitions
 │   ├── plop-templates/           # Code generation templates
 │   └── CLAUDE.md                 # Frontend-specific documentation
-├── legacy-client/                # Original Next.js frontend (separate git repo)
-│   ├── components/               # React components organized by feature
-│   ├── pages/                    # Next.js Pages Router structure
-│   ├── contexts/                 # React context providers
-│   ├── services/                 # Business logic services
-│   ├── reducers/                 # State management
-│   ├── utils/                    # API clients and utilities
-│   ├── types/                    # TypeScript type definitions
-│   └── package.json              # Dependencies and scripts
+├── shot-server/                  # Rails API backend (DEPRECATED - local dev only)
 ├── issues/                       # Issue tracking (markdown files)
 │   ├── TEMPLATE.md               # Issue template
 │   └── *.md                      # Individual issue files
@@ -59,12 +66,13 @@ chi-war/                          # Root coordination repository
 │   ├── test-*.js                 # E2E test scripts
 │   ├── login-helper.js           # Test authentication helper
 │   └── test-results/             # Test screenshots and artifacts
-├── .gitignore                    # Ignores shot-server/ and shot-client-next/ 
+├── .gitignore                    # Ignores shot-elixir/, shot-server/, shot-client-next/
 └── CLAUDE.md                     # This file - overall documentation
 ```
 
 **Key Points:**
-- **shot-server/** and **shot-client-next/** are separate git repositories, ignored by the root .gitignore
+- **shot-elixir/** and **shot-client-next/** are separate git repositories, ignored by the root .gitignore
+- **shot-elixir is the source of truth** for the backend API - all new development should target Phoenix
 - Root chi-war repository tracks shared coordination files: issues, specs, test scripts, and documentation
 - Each sub-application maintains its own git history and CLAUDE.md documentation
 - Development workflow involves working in individual repositories while coordinating through shared test infrastructure
@@ -73,17 +81,17 @@ chi-war/                          # Root coordination repository
 
 ## Common Development Commands
 
-### Backend (shot-server)
+### Backend (shot-elixir) - PRIMARY
 ```bash
-cd shot-server
-bundle install                    # Install dependencies
-rails db:migrate                  # Run database migrations
-rails server                      # Start development server
-bundle exec sidekiq               # Start background job processor
-bundle exec rspec                 # Run all tests
-bundle exec rspec spec/models/    # Run model tests
-rails console                     # Interactive Rails console
-rails discord:register_commands   # Register Discord bot commands
+cd shot-elixir
+mix deps.get                      # Install dependencies
+mix ecto.migrate                  # Run database migrations
+mix phx.server                    # Start development server (port 4002)
+iex -S mix phx.server             # Start with interactive console
+mix test                          # Run all tests
+mix test test/shot_elixir/        # Run specific tests
+mix format                        # Format code
+mix compile --warnings-as-errors  # Check for warnings
 ```
 
 ### Frontend (shot-client-next)
@@ -98,12 +106,23 @@ npm run fl                        # Format and lint together
 npm run generate:component        # Generate new component with Plop
 ```
 
+### Backend (shot-server) - DEPRECATED
+```bash
+# Rails backend is deprecated. Use shot-elixir for all new development.
+# These commands are for legacy reference only:
+cd shot-server
+bundle install                    # Install dependencies
+rails db:migrate                  # Run database migrations
+rails server                      # Start development server
+bundle exec rspec                 # Run all tests
+```
+
 ## Test Environment Configuration
 
 **Separate Test Ports for Concurrent Development and Testing:**
 
 ### Development Servers (Default)
-- **Rails**: Port 3000 (`rails server`)
+- **Phoenix**: Port 4002 (`mix phx.server`)
 - **Next.js**: Port 3001 (`npm run dev`)
 
 ### Starting Development Environment
@@ -111,10 +130,10 @@ npm run generate:component        # Generate new component with Plop
 **Complete Development Environment Setup:**
 ```bash
 # Kill all existing servers
-pkill -f "rails server" ; pkill -f "puma" ; pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 3
+pkill -f "beam" ; pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 3
 
-# Start Rails development server in background
-bash -c 'cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-server && source ~/.rvm/scripts/rvm && rvm use 3.2.2 && rails server -p 3000' &
+# Start Phoenix development server in background
+bash -c 'cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-elixir && mix phx.server' &
 
 # Start Next.js development server in background
 bash -c 'cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-client-next && npm run dev' &
@@ -123,17 +142,18 @@ bash -c 'cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-client-next &
 sleep 10
 
 # Verify servers are running
-curl -s http://localhost:3000/api/v2/users/current | head -1  # Should return auth error
-curl -s http://localhost:3001 | head -1                      # Should return redirect
+curl -s http://localhost:4002/api/v2/users/current | head -1  # Should return auth error
+curl -s http://localhost:3001 | head -1                       # Should return redirect
 ```
 
 **Individual Server Startup:**
 
-For Rails development server:
+For Phoenix development server:
 ```bash
-cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-server
-source ~/.rvm/scripts/rvm && rvm use 3.2.2
-rails server -p 3000
+cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-elixir
+mix phx.server
+# Or with interactive console:
+iex -S mix phx.server
 ```
 
 For Next.js development server:
@@ -143,50 +163,52 @@ npm run dev
 ```
 
 **Notes:**
-- Rails development server takes ~8-10 seconds to fully start
+- Phoenix development server starts quickly (~2-3 seconds)
 - Next.js server is usually ready in ~3-5 seconds with Turbopack
 - Both servers should show proper error responses when running correctly
-- Rails development environment uses the main database (not test database)
+- Phoenix uses the same database as production (shot_counter_local)
 
-### Test Servers (Isolated Testing)
-- **Rails**: Port 3004 (`rails test:server`)
-- **Next.js**: Port 3005 (`npm run test`)
-
-### Starting Test Environment
+### Test Environment
 ```bash
-# Terminal 1 - Start Rails test server (cleans and seeds test DB)
-cd shot-server && rails test:server
+# Terminal 1 - Start Phoenix server
+cd shot-elixir && mix phx.server
 
-# Terminal 2 - Start Next.js test server
-cd shot-client-next && npm run test
+# Terminal 2 - Start Next.js server
+cd shot-client-next && npm run dev
 
-# Terminal 3 - Run E2E tests (uses ports 3004/3005)
+# Terminal 3 - Run E2E tests
 cd test-scripts && node test-invitation-simple.js
 ```
 
 **Benefits:**
-- Keep development servers running while testing
-- Isolated test database with proper seed data
-- E2E tests use dedicated test ports (3004/3005)
-- No interference between development and testing workflows
+- Phoenix and Next.js can run concurrently
+- Shared database between development and test
+- E2E tests validate full stack integration
 
 ## High-Level Architecture
 
-### Backend Architecture
-The Rails API follows a service-oriented pattern with:
-- **Controllers** in `app/controllers/api/v1/` and `api/v2/` - Handle HTTP requests
-- **Models** in `app/models/` - Active Record models with UUID primary keys
-- **Serializers** in `app/serializers/` - Format JSON responses  
-- **Services** in `app/services/` - Complex business logic
-- **Jobs** in `app/jobs/` - Background processing with Sidekiq
-- **Channels** in `app/channels/` - WebSocket connections via Action Cable
+### Backend Architecture (Phoenix/Elixir)
+The Phoenix API follows an organized pattern with:
+- **Controllers** in `lib/shot_elixir_web/controllers/api/v2/` - Handle HTTP requests
+- **Schemas** in `lib/shot_elixir/` (by context) - Ecto schemas with UUID primary keys
+- **Views** in `lib/shot_elixir_web/views/api/v2/` - Format JSON responses
+- **Services** in `lib/shot_elixir/services/` - Complex business logic
+- **Workers** in `lib/shot_elixir/workers/` - Background processing with Oban
+- **Channels** in `lib/shot_elixir_web/channels/` - WebSocket connections via Phoenix Channels
 
 Key services:
 - `AiService` - Character generation using AI
 - `NotionService` - Sync characters to Notion
-- `DiscordBot` - Discord integration for game management
+- `DiscordBot` - Discord integration for game management (via Nostrum)
 - `CharacterDuplicatorService` - Clone characters
 - `DiceRoller` - Dice rolling logic
+
+**Context organization:**
+- `ShotElixir.Accounts` - Users, authentication
+- `ShotElixir.Campaigns` - Campaigns, memberships
+- `ShotElixir.Characters` - Characters, schticks, weapons
+- `ShotElixir.Fights` - Fights, shots, encounters
+- `ShotElixir.World` - Sites, parties, factions, junctures
 
 ### Frontend Architecture
 The Next.js app uses:
@@ -253,10 +275,10 @@ toastError(`Error updating ${entityName}`)
 - Avoid technical error details in user-facing messages
 
 ### Communication Flow
-1. Frontend authenticates via Devise JWT tokens stored in localStorage
+1. Frontend authenticates via Guardian JWT tokens stored in localStorage
 2. API requests use Axios with token in Authorization header
-3. Real-time updates via Action Cable WebSocket connections
-4. CORS configured for cross-origin requests
+3. Real-time updates via Phoenix Channels WebSocket connections
+4. CORS configured for cross-origin requests (chiwar.net, shot-client-phoenix.fly.dev)
 
 ## Domain Model
 
@@ -272,12 +294,7 @@ Character types: `:pc`, `:npc`, `:uber_boss`, `:boss`, `:featured_foe`, `:mook`,
 
 ## API Endpoints
 
-### V1 API (Legacy)
-- `/api/v1/characters` - Character CRUD
-- `/api/v1/fights` - Fight management
-- `/api/v1/campaigns` - Campaign operations
-
-### V2 API (Current)
+### V2 API (Current - Phoenix)
 Uses consistent RESTful patterns:
 - `GET /api/v2/{resource}` - List with pagination
 - `GET /api/v2/{resource}/{id}` - Show single resource
@@ -285,20 +302,29 @@ Uses consistent RESTful patterns:
 - `PATCH /api/v2/{resource}/{id}` - Update
 - `DELETE /api/v2/{resource}/{id}` - Delete
 
-Resources: campaigns, characters, vehicles, fights, schticks, weapons, sites, parties, factions, junctures, users
+Resources: campaigns, characters, vehicles, fights, schticks, weapons, sites, parties, factions, junctures, users, invitations, encounters, ai, ai_images
+
+### Authentication Endpoints
+- `POST /users/sign_in` - Login (returns JWT)
+- `POST /users/sign_up` - Registration
+- `DELETE /users/sign_out` - Logout
+
+### V1 API (Legacy - Deprecated)
+V1 endpoints existed in the Rails backend. All new development should use V2 API.
 
 ## Testing Approach
 
-### Backend Testing
+### Backend Testing (Phoenix)
 ```bash
-bundle exec rspec                          # Run all tests
-bundle exec rspec spec/models/character_spec.rb  # Run specific test file
-bundle exec rspec --tag focus              # Run focused tests
+mix test                                   # Run all tests
+mix test test/shot_elixir/characters_test.exs  # Run specific test file
+mix test --only focus                      # Run focused tests
 ```
 
 Test database setup:
 ```bash
-rails db:test:prepare
+mix ecto.create
+mix ecto.migrate
 ```
 
 ### End-to-End Testing with Playwright
@@ -309,17 +335,12 @@ The Chi War application uses Playwright for end-to-end testing with a comprehens
 **Reliable Test Environment Startup:**
 ```bash
 # Kill any existing processes first
-pkill -f "rails server" ; pkill -f "puma" ; pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 3
+pkill -f "beam" ; pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 3
 
-# Set up test database with proper seed data
-cd shot-server
-source ~/.rvm/scripts/rvm && rvm use 3.2.2
-RAILS_ENV=test rails db:create db:migrate db:seed
+# Start Phoenix server in background
+cd shot-elixir && mix phx.server &
 
-# Start Rails test server in background
-RAILS_ENV=test rails server -p 3000 &
-
-# Start Next.js development server in background  
+# Start Next.js development server in background
 cd ../shot-client-next && npm run dev &
 
 # Wait for servers to fully initialize
@@ -329,7 +350,7 @@ sleep 10
 **Test Database Seed Data:**
 The test environment is seeded with:
 - **Gamemaster user**: `progressions@gmail.com` (password: `password`)
-- **Player user**: `player@example.com` (password: `password`) 
+- **Player user**: `player@example.com` (password: `password`)
 - **Campaigns**: "Test Campaign" (active), "Secondary Campaign", "Third Campaign"
 - **User memberships**: Player user is member of multiple campaigns with "Test Campaign" as active
 - **Characters**: Sample characters for testing
@@ -395,107 +416,117 @@ Playwright end-to-end tests provide comprehensive frontend validation. No additi
 
 ### Reliable Server Startup for Testing
 
-**Starting Rails Server in TEST Environment:**
+**Starting Phoenix Server:**
 ```bash
-# From shot-server directory:
-# 1. Kill any existing processes
-pkill -f "rails server" ; pkill -f "puma" ; sleep 2
-
-# 2. Start Rails test server
-source ~/.rvm/scripts/rvm && rvm use 3.2.2 && RAILS_ENV=test rails db:prepare && RAILS_ENV=test rails server -p 3000
+# From shot-elixir directory:
+cd shot-elixir
+mix phx.server
+# Or with interactive console:
+iex -S mix phx.server
 ```
 
 **Starting Next.js Development Server:**
 ```bash
 # From shot-client-next directory:
-# 1. Kill any existing processes
-pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 2
-
-# 2. Start Next.js server
+cd shot-client-next
 npm run dev
 ```
 
 **Complete Test Environment Setup:**
 ```bash
 # Kill all existing servers
-pkill -f "rails server" ; pkill -f "puma" ; pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 3
+pkill -f "beam" ; pkill -f "next-server" ; pkill -f "node.*3001" ; sleep 3
 
-# Start Rails test server in background
-bash -c 'source ~/.rvm/scripts/rvm && rvm use 3.2.2 && RAILS_ENV=test rails server -p 3000' &
+# Start Phoenix server in background
+bash -c 'cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-elixir && mix phx.server' &
 
 # Start Next.js server in background
-cd /path/to/shot-client-next && npm run dev &
+cd /Users/isaacpriestley/tech/isaacpriestley/chi-war/shot-client-next && npm run dev &
 
 # Wait for servers to start
 sleep 10
 
 # Verify servers are running
-curl -s http://localhost:3000/api/v2/users/current | head -1  # Should return auth error
-curl -s http://localhost:3001 | head -1                      # Should return redirect
+curl -s http://localhost:4002/api/v2/users/current | head -1  # Should return auth error
+curl -s http://localhost:3001 | head -1                       # Should return redirect
 ```
 
 **Notes:**
-- Rails test server takes ~8-10 seconds to fully start
+- Phoenix server starts quickly (~2-3 seconds)
 - Next.js server is usually ready in ~5-8 seconds
 - Both servers will show proper error responses when running correctly
-- Rails test environment uses separate database from development
+- Development uses the same database as production (shot_counter_local)
 
 ## Database Management
 
 PostgreSQL with UUID primary keys:
 ```bash
-rails db:create                   # Create database
-rails db:migrate                  # Run migrations
-rails db:rollback                 # Rollback last migration
-rails db:seed                     # Load seed data
-rails generate migration AddFieldToModel field:type  # Generate migration
+mix ecto.create                   # Create database
+mix ecto.migrate                  # Run migrations
+mix ecto.rollback                 # Rollback last migration
+mix run priv/repo/seeds.exs       # Load seed data
+mix ecto.gen.migration add_field_to_model  # Generate migration
 ```
 
 ## Background Jobs
 
-Sidekiq processes these job types:
+Oban processes these job types:
 - AI character/image generation
-- Notion synchronization  
+- Email delivery
+- Notion synchronization
 - Discord notifications
 - Campaign/fight broadcasts
 
-Monitor jobs:
-```bash
-bundle exec sidekiq
-# Visit http://localhost:3000/sidekiq for web UI
+Monitor jobs via Oban dashboard or IEx console:
+```elixir
+# In IEx
+Oban.Job |> ShotElixir.Repo.all()
 ```
 
 ## Real-time Features
 
-Action Cable channels:
+Phoenix Channels:
 - `CampaignChannel` - Campaign-wide updates
 - `FightChannel` - Fight-specific updates (shot changes, character actions)
 
-Frontend subscribes via `@rails/actioncable` package.
+Frontend subscribes via `@rails/actioncable` compatible Phoenix transport.
 
 ## Environment Variables
 
-Backend requires:
-- Database credentials
-- Redis URL
-- JWT secret
-- Discord bot token
-- Notion API key
-- ImageKit credentials
-- AWS S3 credentials
+Backend (Phoenix) requires:
+- `DATABASE_URL` - PostgreSQL connection string
+- `SECRET_KEY_BASE` - Phoenix secret key
+- `PHX_HOST` - Hostname (shot-elixir.fly.dev)
+- `DISCORD_TOKEN` - Discord bot token
+- `NOTION_TOKEN` - Notion API key
+- `IMAGEKIT_*` - ImageKit credentials
+- `MAILGUN_*` - Mailgun email credentials
 
 Frontend requires:
-- API base URL
-- WebSocket URL
+- `NEXT_PUBLIC_API_URL` - Backend API URL (https://shot-elixir.fly.dev)
+- `NEXT_PUBLIC_WS_URL` - WebSocket URL
 
 ## Deployment
 
-Backend deployed to Fly.io:
+### Backend (Phoenix) - shot-elixir
 ```bash
-fly deploy
-fly logs
-fly ssh console
+cd shot-elixir
+fly deploy -a shot-elixir
+fly logs -a shot-elixir
+fly ssh console -a shot-elixir
 ```
+
+### Frontend (Next.js) - shot-client-phoenix
+```bash
+cd shot-client-next
+fly deploy -a shot-client-phoenix
+fly logs -a shot-client-phoenix
+```
+
+### Production URLs
+- **Frontend**: https://chiwar.net (shot-client-phoenix.fly.dev)
+- **Backend API**: https://shot-elixir.fly.dev
+- **Database**: shot-counter-db.fly.dev (PostgreSQL)
 
 ## Code Generation
 
@@ -509,12 +540,14 @@ Templates in `plop-templates/` define component structure.
 
 ## Important Patterns
 
-1. **Authorization**: Gamemaster-only actions check `current_user.gamemaster?`
+1. **Authorization**: Gamemaster-only actions check `current_user.gamemaster?` or Guardian plugs
 2. **Soft deletes**: Use `active` boolean instead of destroying records
 3. **Campaign context**: Most operations scoped to `current_campaign`
-4. **Serializer selection**: Different serializers for index vs show actions
-5. **WebSocket broadcasts**: Trigger after state changes for real-time updates
-- run "nr fl" to lint and format
+4. **View selection**: Different view renders for index vs show actions
+5. **Channel broadcasts**: Trigger after state changes for real-time updates
+6. **Context modules**: Business logic organized by domain context (Accounts, Campaigns, Characters, etc.)
+- run "nr fl" to lint and format in shot-client-next
+- run "mix format" to format in shot-elixir
 
 ## Issue Tracking
 
@@ -537,11 +570,12 @@ When the user says **"create an issue"**, this means:
 6. **Push to GitHub** to maintain issue tracking history
 
 This creates a systematic approach to documenting bugs, improvements, and technical debt discovered during development and testing.
-- use full paths to navigate to the root, server, and client directories
-- when i say make a new branch, make a new branch in root, server, and client directories
+- use full paths to navigate to the root, shot-elixir, and shot-client-next directories
+- when i say make a new branch, make a new branch in root, shot-elixir, and shot-client-next directories
 - when writing tests, use the login-helper.js
 - always use @agent-test-environment-manager to run tests
-- in chi-war/CLAUDE.md describe the directory structure, where shot-server and shot-client-next are gitignored, each their own repo
-- When developing new features, follow the development guide in chi-war/DEVELOPMENT_GUIDE.md. 
+- shot-elixir and shot-client-next are gitignored, each their own git repo
+- When developing new features, follow the development guide in chi-war/DEVELOPMENT_GUIDE.md.
 Always start with Phase 0 (issue/specs review) before any code exploration.
-- Any new API endpoints must use Api V2
+- Any new API endpoints must use Api V2 in shot-elixir (Phoenix)
+- **shot-elixir is the source of truth** - do not develop new features in shot-server (Rails)
