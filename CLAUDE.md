@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Never tell me "You're absolutely right!". Don't compliment me or praise me or agree with my assessment. Use a plain,  matter-of-fact tone without sycophancy.
 
+## Git Workflow
+
+**Never commit directly to main/master.** Always create a feature branch and make a pull request. Wait for CI to pass before merging.
+
 ## Repository Overview
 
 This is a coordination repository for managing Feng Shui 2 RPG campaigns with two primary applications:
