@@ -85,7 +85,7 @@ async function loginToChiWar(page, email, password, options = {}) {
  * @param {Object} options - Optional configuration
  */
 async function loginAsGamemaster(page, options = {}) {
-  return loginToChiWar(page, 'progressions@gmail.com', 'TestPass123!', options);
+  return loginToChiWar(page, 'progressions@gmail.com', 'password123', options);
 }
 
 /**
