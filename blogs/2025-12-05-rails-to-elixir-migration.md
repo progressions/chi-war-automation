@@ -2,7 +2,7 @@
 
 *December 5, 2025*
 
-I recently completed migrating the backend API for Chi War, a Feng Shui 2 RPG campaign management application, from Ruby on Rails to Elixir/Phoenix. The project is still in alpha, but the migration has been running smoothly in production for several months. This post documents the key decisions, challenges, and patterns that emerged during the process.
+I just completed migrating the backend API for Chi War, a Feng Shui 2 RPG campaign management application, from Ruby on Rails to Elixir/Phoenix. Last week I removed all the old Ruby and legacy Next.js code from the repository, so as of this week the application is running entirely on Elixir. This post documents the key decisions, challenges, and patterns that emerged during the process.
 
 ## Why Migrate?
 
@@ -21,7 +21,7 @@ Rather than a big-bang rewrite, I took an incremental approach:
 1. **Phase 1**: Build Phoenix API alongside Rails, sharing the database
 2. **Phase 2**: Switch frontend to Phoenix endpoints via environment config
 3. **Phase 3**: Deploy Phoenix to production, keep Rails as fallback
-4. **Phase 4**: Deprecate Rails, Phoenix becomes the source of truth
+4. **Phase 4**: Remove Rails entirely, Phoenix becomes the sole backend
 
 The shared database was crucial. Both applications read from and write to the same PostgreSQL instance, which meant I could switch between backends without data migration.
 
@@ -201,7 +201,7 @@ The explicit rendering makes the API contract clear. There's no hidden serializa
 
 ### Database Schema Ownership
 
-I decided Rails would own the database schema. Phoenix loads the schema from `priv/repo/structure.sql` rather than running its own migrations. This avoided conflicts but meant running Rails migrations even after the switch.
+I decided Rails would own the database schema during the migration period. Phoenix loaded the schema from `priv/repo/structure.sql` rather than running its own migrations. Now that Rails is gone, I'll transition schema management to Ecto migrations going forward.
 
 ```bash
 # In CI, set up test database with Rails schema
@@ -272,6 +272,7 @@ The migration achieved its goals:
 - **Real-time Performance**: Phoenix Channels handle concurrent WebSocket connections more efficiently than Action Cable.
 - **Operational Simplicity**: Fewer moving parts. No Redis. PostgreSQL handles both data and job queues.
 - **Code Clarity**: Explicit contexts and view modules make the codebase easier to navigate.
+- **Clean Repository**: Last week I removed all the legacy Ruby and old Next.js code, leaving a clean Elixir-only backend.
 
 ## Lessons Learned
 
@@ -283,10 +284,12 @@ The migration achieved its goals:
 
 4. **Embrace contexts.** The organizational pattern takes adjustment but pays off in clarity.
 
-5. **Test both backends.** Playwright E2E tests validated that both implementations behaved identically.
+5. **Test both backends.** Playwright E2E tests validated that both implementations behaved identically before cutting over.
 
-The Rails backend still exists in the repository for reference, but Phoenix has been the production backend since mid-2024. The migration was worth the effort, primarily for the improved real-time capabilities and the pleasure of working with Elixir's explicit, functional style.
+6. **Delete the old code.** Once you're confident in the new implementation, remove the legacy code. It felt good to finally delete the Rails backend last week.
+
+The migration was worth the effort, primarily for the improved real-time capabilities and the pleasure of working with Elixir's explicit, functional style.
 
 ---
 
-*Chi War is an alpha-stage campaign management tool for the Feng Shui 2 tabletop RPG. The codebase is available at [github.com/progressions](https://github.com/progressions).*
+*Chi War is a campaign management tool for the Feng Shui 2 tabletop RPG. The codebase is available at [github.com/progressions](https://github.com/progressions).*
