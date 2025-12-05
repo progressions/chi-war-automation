@@ -1,6 +1,6 @@
 # Joining Hatch: Building the Data Bridge for AI-Powered Customer Conversations
 
-*December 5, 2025*
+*October 5, 2025*
 
 I recently started a new role at [Hatch](https://www.usehatchapp.com), an AI CSR (Customer Service Representative) platform that helps home service businesses manage customer conversations at scale. I'm on the Data Bridge team, which handles the integrations that make the platform work.
 
